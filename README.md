@@ -15,3 +15,101 @@ Campos: nº temporada, nº episódio, título, duração, data de lançamento, s
 - Avaliações
 - Permitir ao usuário avaliar filmes e episódios (nota de 0 a 10).
 - Calcular automaticamente a nota média da série e nota geral do catálogo.
+
+## Estrutura de Classes
+```mermaid
+classDiagram
+    %% Classes-base
+    class Midia {
+        %%---Atributos---
+        +str titulo
+        +str genero
+        +int ano
+        +int duracao
+        +str classificacao
+        +str status
+        +List~str~ elenco
+        +List~str~ diretor
+        +List~str~ roteirista
+        %%---Métodos---
+        +exibir_detalhes()
+        +alterar_status()
+    }
+    
+    class Listas {
+
+    }
+
+    class Relatorios {
+
+    }
+
+    class Historico{
+
+    }
+
+    class Configuracoes{
+
+    }
+
+    %% Heranças de Midia 
+    class Filme {
+        +int nota
+        +List~Avaliacao~avaliacoes
+        +avaliar_filme()
+    }
+
+    class Serie {
+        +List~Temporada~ temporadas
+        +int nota_media
+        +int total_temporadas
+        +int total_episodios
+        +List~Avaliacao~avaliacoes
+        +media_avaliacao_temporadas()
+        +avaliar_serie()
+    }
+
+    %% Serie Subclasses
+    class Temporada {
+        +int numero
+        +List~Episodio~ episodios
+        +int total_episodios
+        +int nota_media
+        +int nota
+        +List~Avaliacao~avaliacoes
+        +media_avaliacao_episodios()
+        +avaliar_temporada()
+        +
+    }
+
+    class Episodio {
+        +int numero
+        +str titulo
+        +int duracao
+        +float nota
+        +str status
+        +int nota
+        +List~Avaliacao~avaliacoes
+        +avaliar_episodio()
+        +reproduzir()
+        +ver_avaliacoes()
+    }
+
+    %% Avaliações
+    class Avaliacao{
+        +str comentario
+        +int nota
+        +adicionar_nota()
+        +adicionar_comentario()
+    }
+
+    %% Relacionamentos
+    Midia <|-- Filme : herda
+    Midia <|-- Serie : herda
+    Serie "1" *-- "many" Temporada : contem
+    Serie "1" *-- "many" Avaliacao : contem
+    Temporada "1" *-- "many" Episodio : contem
+    Temporada "1" *-- "many" Avaliacao : contem
+    Episodio "1" *-- "many" Avaliacao : contem
+    Filme "1" *-- "many" Avaliacao : contem
+```
