@@ -19,6 +19,17 @@ Campos: nº temporada, nº episódio, título, duração, data de lançamento, s
 ## Estrutura de Classes
 ```mermaid
 classDiagram
+    %%----USUARIO----
+    class Usuario {
+        +str nome
+        +str nome_de_usuario
+        +str senha
+        +mudar_nome_de_usuario()
+        +mudar_senha()
+    }
+
+
+
     %% Classes-base
     class Midia {
         %%---Atributos---
@@ -35,38 +46,66 @@ classDiagram
         +exibir_detalhes()
         +alterar_status()
     }
+
+    class Catalogo {
+        +List~Filme~filmes
+        +List~Serie~series
+        +List~Lista~listas
+        +procurar_midia()
+        +adicionar_midia()
+    }
     
-    class Listas {
+    class Lista {
+        +str nome_da_lista
+        +List~Midia~midias
+        +criar_lista()
+        +adicionar_na_lista()
+        +remover_da_lista()
+    }
+
+    class Relatorio {
+        +str nome_do_usuario
+        +str nome_do_relatorio
+        +criar_relatorio()
+        +atualizar_relatorio()
+        +mostrar_relatorio()
+    }
+
+    class Historico {
+        +List~Midia~midias_assistidas
+        +mostrar_relatorio()
 
     }
 
-    class Relatorios {
-
+    class Configuracoes {
+        +float nota_minima_de_recomendados
+        +int limite_de_listas_personalizadas
+        +conversor_de_duracao()
+        +mudar_nota_minima_de_recomendados()
+        +mudar_limite_de_listas_recomendadas()
     }
 
-    class Historico{
 
-    }
-
-    class Configuracoes{
-
-    }
 
     %% Heranças de Midia 
     class Filme {
-        +int nota
+        +float nota
         +List~Avaliacao~avaliacoes
         +avaliar_filme()
+        +marcar_concluido()
     }
 
     class Serie {
         +List~Temporada~ temporadas
-        +int nota_media
+        +float nota_media
+        +float nota_serie
         +int total_temporadas
         +int total_episodios
         +List~Avaliacao~avaliacoes
         +media_avaliacao_temporadas()
         +avaliar_serie()
+        +ver_temporadas()
+        +ver_avaliacoes()
     }
 
     %% Serie Subclasses
@@ -74,12 +113,13 @@ classDiagram
         +int numero
         +List~Episodio~ episodios
         +int total_episodios
-        +int nota_media
-        +int nota
+        +float nota_media
+        +float nota_temporada
         +List~Avaliacao~avaliacoes
         +media_avaliacao_episodios()
         +avaliar_temporada()
-        +
+        +mostrar_episodios()
+        +ver_avaliacoes()
     }
 
     class Episodio {
@@ -88,20 +128,42 @@ classDiagram
         +int duracao
         +float nota
         +str status
-        +int nota
         +List~Avaliacao~avaliacoes
         +avaliar_episodio()
-        +reproduzir()
+        +marcar_concluido()
         +ver_avaliacoes()
     }
 
+
+
     %% Avaliações
-    class Avaliacao{
+    class Avaliacao {
+        +str tipo
         +str comentario
-        +int nota
+        +float nota
         +adicionar_nota()
         +adicionar_comentario()
     }
+
+
+
+%% Heranças de Relatorio
+    class RelatorioGeral {
+        +float media_notas_por_genero
+        +float tempo_total_assistido
+        +List top10_bem_avaliados
+        +List series_mais_eps_assistidos
+        +List filmes_mais_assistidos
+        +List series_mais_assistidas
+    }
+
+    class RelatorioHistorico {
+        +float tempo_total_dia
+        +float tempo_total_semana
+        +float tempo_total_mes
+    }
+
+
 
     %% Relacionamentos
     Midia <|-- Filme : herda
@@ -112,4 +174,16 @@ classDiagram
     Temporada "1" *-- "many" Avaliacao : contem
     Episodio "1" *-- "many" Avaliacao : contem
     Filme "1" *-- "many" Avaliacao : contem
+    Catalogo "1" *-- "many" Filme : contem
+    Catalogo "1" *-- "many" Serie : contem
+    Catalogo "1" *-- "many" Lista : contem
+    Lista "1" o-- "many" Filme : agrega
+    Lista "1" o-- "many" Serie : agrega
+    Relatorio <|-- RelatorioGeral : herda
+    Relatorio <|-- RelatorioHistorico : herda
+    Historico "1" *-- "1" RelatorioHistorico : contem
+    Usuario "1" *-- "1" Catalogo : contem
+    Usuario "1" *-- "1" Configuracoes : contem
+    Usuario "1" *-- "1" RelatorioGeral : contem
+    Usuario "1" *-- "1" Historico : contem
 ```
