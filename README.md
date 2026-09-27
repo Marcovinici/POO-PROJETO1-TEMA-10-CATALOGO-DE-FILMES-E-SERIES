@@ -143,7 +143,7 @@ classDiagram
 
 
 
-%% Heranças de Relatorio
+    %% Heranças de Relatorio
     class RelatorioGeral {
         +float media_notas_por_genero
         +float tempo_total_assistido
