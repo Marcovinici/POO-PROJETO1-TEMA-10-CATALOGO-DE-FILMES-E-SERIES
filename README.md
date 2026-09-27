@@ -92,7 +92,7 @@ classDiagram
         +float nota
         +List~Avaliacao~avaliacoes
         +avaliar_filme()
-        +marcar_concluido()
+        +ver_avaliacoes()
     }
 
     class Serie {
@@ -124,13 +124,9 @@ classDiagram
 
     class Episodio {
         +int numero
-        +str titulo
-        +int duracao
         +float nota
-        +str status
         +List~Avaliacao~avaliacoes
         +avaliar_episodio()
-        +marcar_concluido()
         +ver_avaliacoes()
     }
 
@@ -168,6 +164,7 @@ classDiagram
     %% Relacionamentos
     Midia <|-- Filme : herda
     Midia <|-- Serie : herda
+    Midia <|-- Episodio : herda
     Serie "1" *-- "many" Temporada : contem
     Serie "1" *-- "many" Avaliacao : contem
     Temporada "1" *-- "many" Episodio : contem
