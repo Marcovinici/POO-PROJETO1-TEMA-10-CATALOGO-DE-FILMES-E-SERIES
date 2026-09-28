@@ -1,4 +1,5 @@
-Esse projeto faz parte da disciplina de Programação Orientada a Objetos (ES0008), feito para trabalhar os conhecimentos adquiridos ao longo da cadeira e nas disciplinas anteriores.
+# POO-PROJETO1-TEMA-10-CATALOGO-DE-FILMES-E-SERIES
+ Esse projeto faz parte da disciplina de Programação Orientada a Objetos (ES0008), feito para trabalhar os conhecimentos adquiridos ao longo da cadeira e nas disciplinas anteriores.
 
 ## Descrição  do Projeto
 
@@ -135,7 +136,7 @@ classDiagram
 
 
 
-%% Heranças de Relatorio
+    %% Heranças de Relatorio
     class RelatorioGeral {
         +float media_notas_por_genero
         +float tempo_total_assistido
