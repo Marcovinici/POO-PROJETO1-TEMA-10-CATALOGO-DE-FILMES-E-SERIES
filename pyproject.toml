@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "POO-PROJETO1-TEMA-10-CATALOGO-DE-FILMES-E-SERIES"
+version = "0.1.0"
+description = "Projeto de Catálogo de Filmes e Séries em Python (POO - UFCA)"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [
+    { name = "Marcovinici" }
+]
+
+# Dependências de execução (vazias por enquanto)
+dependencies = []
+
+# Dependências opcionais para ambiente de desenvolvimento/testes
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+# Informa ao Python que os pacotes do projeto estão na pasta 'src'
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# Configuração simples do pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
