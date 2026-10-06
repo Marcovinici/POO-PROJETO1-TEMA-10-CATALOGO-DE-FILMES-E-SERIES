@@ -5,24 +5,105 @@ class Midia:
 
     Attributes:
     titulo (str): Representa o titulo da mídia
-    genero (str): Representa o gênero da mídia
     ano (int): Representa a data de lançamento da mídia
     duracao (int): Representa a duração do conteúdo
     classificacao (str): Representa a classificação de idade recomendada para os indivíduos que conumiram a mídia
+    genero (str): Representa o gênero da mídia
     status (str): Guarda a informação que indica se a midia foi reproduzida ou não pelo usuário
     elenco (list[str]): Lista que contém os nomes(strings) que fazem  parte do elenco da mídia
     diretor (list[str]): Lista que guarda o(s) nome(s) do(s) diretor(es) da mídia
     roteirista (list[str]): Lista que guarda o(s) nome(s) do(s) roteirista(s) 
     """
-    def __init__(self, titulo = None, duracao = None, ano = None):
-        pass
+    def __init__(self, titulo: str, duracao: int, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None):
+        self.titulo = titulo
+        self.genero = genero
+        self.duracao = duracao
+        self.ano = ano
+        self.classificacao = classificacao
+        # Validação de elenco
+        if elenco is None:
+            self.elenco = []
+        elif isinstance(elenco, list):
+            self.elenco = elenco
+        else:
+            raise TypeError("O atributo 'elenco' deve ser uma lista de strings")
+        # Validação de diretor
+        if diretor is None:
+            self.diretor = []
+        elif isinstance(diretor, list):
+            self.diretor = diretor
+        else:
+            raise TypeError("O atributo 'diretor' deve ser uma lista de strings")
+        # Validação de roteirista
+        if roteirista is None:
+            self.roteirista = []
+        elif isinstance(roteirista, list):
+            self.roteirista = roteirista
+        else:
+            raise TypeError("O atributo 'roteirista' deve ser uma lista de strings")
+        self._status = "NAO-ASSISTIDO"
+
+    @property
+    def titulo(self):
+        return self._titulo
+    @titulo.setter
+    def titulo(self, novo_titulo):
+        if len(novo_titulo) > 0 and len(novo_titulo) != novo_titulo.count(" "):
+            self._titulo = novo_titulo
+        else:
+            raise ValueError("O titulo não poder estar vazio ou ser apenas espaços em branco")
+
+    @property
+    def duracao(self):
+        return self._duracao
+    @duracao.setter
+    def duracao(self, nova_duracao):
+        if nova_duracao > 0:
+            self._duracao = nova_duracao
+        else:
+            raise ValueError("A duracao não pode ser igual o menor a 0")
+
+    @property
+    def ano(self):
+        return self._ano
+    @ano.setter
+    def ano(self, novo_ano):
+        if 1800 < novo_ano <= 2026:
+            self._ano = novo_ano
+        else:
+            raise ValueError("O ano de lançamento do filme deve entre 1800 e 2026")
+
+    @property
+    def classificacao(self):
+        return self._classificacao
+    @classificacao.setter
+    def classificacao(self, nova_classificacao):
+        if nova_classificacao.upper() in ["LIVRE", "+6", "+10", "+12", "+16", "+18"]:
+            self._classificacao = nova_classificacao.upper()
+        else:
+            raise ValueError("A classificacao deve ser uma das seguintes: 'LIVRE', '+6', '+10', '+12', '+16', '+18'")
+
+    @property
+    def status(self):
+        return self._status
+    @status.setter
+    def status(self, novo_status):
+        if novo_status == "ASSISTIDO" or novo_status == "NAO-ASSISTIDO" or novo_status == "ASSISTINDO":
+            self._status = novo_status
+        else:
+            raise ValueError("O status de uma mídia só pode ser um dos seguintes: ASSISTIDO, NAO-ASSISTIDO ou ASSISTINDO")
 
     def exibir_detalhes(self):
-        pass
-    def alterar_status(self):
-        pass
-
-
+        for atributo, valor in self.__dict__.items():
+            print(f"{atributo} : {valor}")
+            
+    def alterar_status(self, status: str):
+        if self.status == status:
+            return f"O objeto {self} continuará com seu status ({self.status}) inalterado"
+        else:
+            self.status = status
+    def __repr__(self):
+        return f""
 
 class Filme(Midia):
     """Representa o filme de um catálogo
@@ -33,13 +114,34 @@ class Filme(Midia):
     nota (float): Representa a nota do filme
     avaliacoes (list[Avaliacao]): Lista contendo as avaliações do filme
     """
-    def __init__ (self):
-        pass
+    def __init__ (self, titulo: str, duracao: int, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None):
+        super().__init__(titulo, duracao, ano, classificacao, genero, elenco, diretor, roteirista)
+        self._nota = None
+        self.avaliacoes = []
 
-    def avaliar_filme(self):
-        pass
+    @property
+    def nota(self):
+        return self._nota
+    @nota.setter
+    def nota(self, nota):
+        if 0 <= nota <= 5:
+            self._nota = nota
+        else:
+            raise ValueError("A nota deve ser um número entre 0 e 5")    
+
+    def __repr__(self):
+        return f"Filme(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}), roteirista = {self.roteirista}"
+
+    def avaliar_filme(self, nota: float):
+        if self.nota != None:
+            self.avaliacoes.remove(self.nota)
+            self.nota = nota
+        else:
+            self.nota = nota
+            self.avaliacoes.append(nota)
+
     def ver_avaliacoes(self):
-        pass
+        return self.avaliacoes
 
 
 
