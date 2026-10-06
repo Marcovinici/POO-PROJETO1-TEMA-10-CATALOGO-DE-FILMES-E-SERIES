@@ -115,6 +115,7 @@ class Filme(Midia):
     avaliacoes (list[Avaliacao]): Lista contendo as avaliações do filme
     """
     def __init__ (self, titulo: str, duracao: int, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None):
+        
         super().__init__(titulo, duracao, ano, classificacao, genero, elenco, diretor, roteirista)
         self._nota = None
         self.avaliacoes = []
@@ -130,7 +131,7 @@ class Filme(Midia):
             raise ValueError("A nota deve ser um número entre 0 e 5")    
 
     def __repr__(self):
-        return f"Filme(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}), roteirista = {self.roteirista}"
+        return f"Filme(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, nota = {self.nota})"
 
     def avaliar_filme(self, nota: float):
         if self.nota != None:
@@ -158,8 +159,26 @@ class Serie(Midia):
     total_episodios (int): Representa o número total de episódios da série
     avaliacoes (list[Avaliacao]): Lista contendo as avaliações da série
     """
-    def __init__(self):
-        pass
+    def __init__(self, titulo: str, duracao: int, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None, temporadas: list["Temporada"] = None):
+        
+        super().__init__(titulo, duracao, ano, classificacao, genero, elenco, diretor, roteirista)
+
+    @property
+    def temporadas(self):
+        return self._temporadas
+    @temporadas.setter
+    def temporadas(self, temporadas):
+        if temporadas is None:
+            self._temporadas = []
+        elif isinstance(temporadas, list):
+            if all(isinstance(item, Temporada) for item in temporadas):
+                self._temporadas = temporadas
+            else:
+                raise TypeError("Todos os items presentes na lista de 'temporadas' devem ser objetos da classe Temporada")
+        else:
+            raise TypeError("O atributo 'temporadas' deve ser uma lista de objetos Temporada")
+            
+        
 
     def ver_temporadas(self):
         pass
@@ -185,12 +204,57 @@ class Temporada:
     nota_temporada (float): Representa a nota da temporada
     avaliacoes (list[Avaliacao]): Lista contendo as avaliacoes da temporada
     """
-    def __init__(self):
-        pass
+    def __init__(self, numero: int, episodios: list["Episodio"] = None):
+        self.numero = numero
+        self.episodios = episodios
+        self._total_episodios = len(self.episodios)
+        self._nota_temporada = None
+        self.avaliacoes = []
+
+    @property
+    def numero(self):
+        return self._numero
+    @numero.setter
+    def numero(self, numero):
+        if numero > 0:
+            self._numero = numero
+        else:
+            raise ValueError("O atributo 'numero' deve ser um número maior que 0")
+
+    @property
+    def episodios(self):
+        return self._episodios
+    @episodios.setter
+    def episodios(self, episodios):
+        if episodios is None:
+            self._episodios = []
+        elif isinstance(episodios, list):
+            if all(isinstance(item, Episodio) for item in episodios):
+                self._episodios = episodios
+            else:
+                raise TypeError("Todos os items da lista 'episodios' devem ser objetos da classe Episodio")
+        else:
+            raise TypeError("O atributo 'episodios' deve ser uma lista")
+
+    @property
+    def nota_temporada(self):
+        return self._nota_temporada
+    @nota_temporada.setter
+    def nota_temporada(self, nota):
+        if 0 <= nota <= 5:
+            self._nota_temporada = nota
+        else:
+            raise ValueError("A nota deve ser um número entre 0 e 5")
+
+        
+
+    def __len__(self):
+        return len(self.episodios)
 
     def media_avaliacao_episodios(self):
         pass
-    def avaliar_temporada(self):
+    def avaliar_temporada(self, nota):
+        self.nota_temporada = nota
         pass
     def mostrar_episodios(self):
         pass
@@ -209,10 +273,45 @@ class Episodio(Midia):
     nota (float): Possui a nota correspondente do episódio
     avaliacoes (list[Avaliacao]): Lista contendo as avaliações do episódio
     """
-    def __init__(self):
-        pass
+    def __init__(self, titulo: str, duracao: int, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None, numero: int = None):
+        
+        super().__init__(titulo, duracao, ano, classificacao, genero, elenco, diretor, roteirista)
+
+        self.numero = numero
+        self._nota = None
+        self._avaliacoes = []
+
+        @property
+        def numero(self):
+            return self._numero
+        @numero.setter
+        def numero(self, numero):
+            if numero > 0:
+                self._numero = numero
+            else:
+                raise ValueError("O atributo 'numero' deve ser um número maior que 0")
+
+        @property
+        def nota(self):
+            return self._nota
+        @nota.setter
+        def nota(self, nota):
+            if 0 <= nota <= 5:
+                self._nota = nota
+            else:
+                raise ValueError("A nota deve ser um número entre 0 e 5")  
+
+    def __repr__(self):
+        return f"Filme(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, numero = {self.numero}, nota = {self.nota})"
     
-    def avaliar_episodio(self):
-        pass
+    def avaliar_episodio(self, nota):
+        if self.nota != None:
+            self.avaliacoes.remove(self.nota)
+            self.nota = nota
+        else:
+            self.nota = nota
+            self.avaliacoes.append(nota)
+
+
     def ver_avaliacoes(self):
-        pass
+        return self._avaliacoes

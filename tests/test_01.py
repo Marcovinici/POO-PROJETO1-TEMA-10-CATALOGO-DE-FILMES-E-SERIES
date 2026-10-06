@@ -52,7 +52,7 @@ def test_criarMidia_atributo_de_lista_invalido(atributo):
 # Testes de Filme
 
 def test_criarFilme():
-    # Confirma que a avaliação válida é salva como nota do filme.
+    # Cria objeto da classe Filme e verifica se os atributos estão com o estado esperado
     filme = teste.Filme("Poderoso Chefão", 1, 2026, "Livre")
     filme.avaliar_filme(4.5)
     assert filme.__dict__ == {'_titulo': 'Poderoso Chefão', 'genero': None, '_duracao': 1, '_ano': 2026, '_classificacao': 'LIVRE', 'elenco': [], 'diretor': [], 'roteirista': [], '_status': 'NAO-ASSISTIDO', '_nota': 4.5, 'avaliacoes': [4.5]}
