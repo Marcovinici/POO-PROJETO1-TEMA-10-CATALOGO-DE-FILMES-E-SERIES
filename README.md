@@ -31,13 +31,11 @@ classDiagram
         +int ano
         +int duracao
         +str classificacao
-        +str status
         +List~str~ elenco
         +List~str~ diretor
         +List~str~ roteirista
         %%---Métodos---
         +exibir_detalhes()
-        +alterar_status()
     }
 
     class Catalogo {
@@ -56,6 +54,10 @@ classDiagram
         +remover_da_lista()
     }
 
+    class ListaPersonalizada{
+        +str nome_usuario
+    }
+
     class Relatorio {
         +str nome_do_usuario
         +str nome_do_relatorio
@@ -64,8 +66,16 @@ classDiagram
         +mostrar_relatorio()
     }
 
+    %% Status por Usuário e Histórico
+
+    class MidiaAssistida {
+        +Midia midia
+        +str data_ultima_visualizacacao
+    }
+
     class Historico {
-        +List~Midia~midias_assistidas
+        +List~MidiaAssistida~midias_assistidas
+        +adicionar_visualizacao()
         +mostrar_relatorio()
 
     }
@@ -158,21 +168,26 @@ classDiagram
     Midia <|-- Filme : herda
     Midia <|-- Serie : herda
     Midia <|-- Episodio : herda
+    Lista <|-- ListaPersonalizada : herda
+
     Serie "1" *-- "many" Temporada : contem
     Serie "1" *-- "many" Avaliacao : contem
     Temporada "1" *-- "many" Episodio : contem
     Temporada "1" *-- "many" Avaliacao : contem
     Episodio "1" *-- "many" Avaliacao : contem
     Filme "1" *-- "many" Avaliacao : contem
-    Catalogo "1" *-- "many" Filme : contem
-    Catalogo "1" *-- "many" Serie : contem
+
+    Catalogo "1" *-- "many" Midia : contem
     Catalogo "1" *-- "many" Lista : contem
-    Lista "1" o-- "many" Filme : agrega
-    Lista "1" o-- "many" Serie : agrega
+    Lista "1" o-- "many" Midia : agrega
+
     Relatorio <|-- RelatorioGeral : herda
     Relatorio <|-- RelatorioHistorico : herda
     Historico "1" *-- "1" RelatorioHistorico : contem
-    Usuario "1" *-- "1" Catalogo : contem
+    Historico "1" *-- "many" MidiaAssistida : contem
+    MidiaAssistida "many" --> "1" Midia : refere-se
+
+    Usuario "many" --> "1" Catalogo : consulta/gerencia
     Usuario "1" *-- "1" Configuracoes : contem
     Usuario "1" *-- "1" RelatorioGeral : contem
     Usuario "1" *-- "1" Historico : contem
