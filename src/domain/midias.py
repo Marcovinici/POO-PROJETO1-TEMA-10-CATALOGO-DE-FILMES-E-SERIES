@@ -108,27 +108,13 @@ class Midia:
 class Filme(Midia):
     """Representa o filme de um catálogo
 
-    Esta classe herda de Midia e possui atributos e métodos extras próprio dos filmes do catálogo
+    Esta classe herda de Midia e representa as mídias do tipo filme
 
-    Attributes:
-    nota (float): Representa a nota do filme
-    avaliacoes (list[Avaliacao]): Lista contendo as avaliações do filme
     """
     def __init__ (self, titulo: str, duracao: int, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None):
         
         super().__init__(titulo, duracao, ano, classificacao, genero, elenco, diretor, roteirista)
-        self._nota = None
         self.avaliacoes = []
-
-    @property
-    def nota(self):
-        return self._nota
-    @nota.setter
-    def nota(self, nota):
-        if 0 <= nota <= 10:
-            self._nota = nota
-        else:
-            raise ValueError("A nota deve ser um número entre 0 e 10")    
 
     def __repr__(self):
         return f"Filme(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, nota = {self.nota})"
@@ -143,8 +129,7 @@ class Serie(Midia):
 
     Attributes:
     temporadas (list[Temporada]): Lista contendo as temporadas da série
-    nota_media (float): Representa média das notas de cada temporada
-    nota_serie (float): Representa nota da série
+    nota_media_temoparadas (float): Representa média das notas de cada temporada
     total_temporadas (int): Representa o número total de temporadas da série
     total_episodios (int): Representa o número total de episódios da série
     avaliacoes (list[Avaliacao]): Lista contendo as avaliações da série
@@ -178,19 +163,8 @@ class Serie(Midia):
     @property
     def total_episodios(self):
         return sum(temporada.total_episodios for temporada in self.temporadas)
-            
-    @property
-    def nota_serie(self):
-        return self._nota_serie
-    @nota_serie.setter
-    def nota_serie(self, nota):
-        if nota is None:
-            self._nota_serie = None
-        elif 0 <= nota <= 10:
-            self._nota_serie = nota
-        else:
-            raise ValueError("A nota deve ser um número entre 0 e 10")
 
+            
     def __repr__(self):
         return f"Serie(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, temporadas = {self.temporadas}, nota = {self.nota_serie}, total_temporadas = {self.total_temporadas}, total_episodios = {self.total_episodios})"
 
@@ -209,7 +183,7 @@ class Temporada:
     numero (int): Representa o número correspondente da temporada
     episodios (list[Episodio]): Lista contendo os episódios que pertencem a temporada
     total_episodios (int): Representa o número total de episódios da temporada
-    nota_media (float): Representa a média de notas de todos os episódios da temporada
+    nota_media_episodios (float): Representa a média de notas de todos os episódios da temporada
     nota_temporada (float): Representa a nota da temporada
     avaliacoes (list[Avaliacao]): Lista contendo as avaliacoes da temporada
     """
@@ -298,7 +272,6 @@ class Episodio(Midia):
     
     Attributes:
     numero (int): Representa o número do episódio
-    nota (float): Possui a nota correspondente do episódio
     avaliacoes (list[Avaliacao]): Lista contendo as avaliações do episódio
     """
     def __init__(self, titulo: str, duracao: int, ano: int, classificacao: str, numero: int, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None):
@@ -318,17 +291,7 @@ class Episodio(Midia):
             self._numero = numero
         else:
             raise ValueError("O atributo 'numero' deve ser um número maior que 0")
-
-    @property
-    def nota(self):
-        return self._nota
-    @nota.setter
-    def nota(self, nota):
-        if 0 <= nota <= 10:
-            self._nota = nota
-        else:
-            raise ValueError("A nota deve ser um número entre 0 e 10")  
-
+ 
     def __repr__(self):
         return f"Episodio(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, numero = {self.numero}, nota = {self.nota})"
     
