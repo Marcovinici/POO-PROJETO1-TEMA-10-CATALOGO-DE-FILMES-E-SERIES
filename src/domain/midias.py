@@ -1,3 +1,5 @@
+from .avaliacao import Avaliacao
+
 class Midia:
     """Classe base para qualquer tipo de mídia presente no catálogo
 
@@ -9,10 +11,11 @@ class Midia:
     duracao (int): Representa a duração do conteúdo
     classificacao (str): Representa a classificação de idade recomendada para os indivíduos que conumiram a mídia
     genero (str): Representa o gênero da mídia
-    status (str): Guarda a informação que indica se a midia foi reproduzida ou não pelo usuário
     elenco (list[str]): Lista que contém os nomes(strings) que fazem  parte do elenco da mídia
     diretor (list[str]): Lista que guarda o(s) nome(s) do(s) diretor(es) da mídia
-    roteirista (list[str]): Lista que guarda o(s) nome(s) do(s) roteirista(s) 
+    roteirista (list[str]): Lista que guarda o(s) nome(s) do(s) roteirista(s)
+    avaliacoes (list[Avaliacao]): Lista contendo todas as avaliações da mídia
+    nota_media (int): Média das notas presentes nas avaliacoes
     """
     def __init__(self, titulo: str, duracao: int, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None):
         self.titulo = titulo
@@ -20,6 +23,9 @@ class Midia:
         self.duracao = duracao
         self.ano = ano
         self.classificacao = classificacao
+        self.avaliacoes = []
+        self.nota_media = None
+
         # Validação de elenco
         if elenco is None:
             self.elenco = []
@@ -83,25 +89,21 @@ class Midia:
         else:
             raise ValueError("A classificacao deve ser uma das seguintes: 'LIVRE', '+6', '+10', '+12', '+16', '+18'")
 
-    @property
-    def status(self):
-        return self._status
-    @status.setter
-    def status(self, novo_status):
-        if novo_status == "ASSISTIDO" or novo_status == "NAO-ASSISTIDO" or novo_status == "ASSISTINDO":
-            self._status = novo_status
-        else:
-            raise ValueError("O status de uma mídia só pode ser um dos seguintes: ASSISTIDO, NAO-ASSISTIDO ou ASSISTINDO")
-
     def exibir_detalhes(self):
         for atributo, valor in self.__dict__.items():
             print(f"{atributo} : {valor}")
-            
-    def alterar_status(self, status: str):
-        if self.status == status:
-            return f"O objeto {self} continuará com seu status ({self.status}) inalterado"
-        else:
-            self.status = status
+
+    def carrega_avaliacoes(self, avaliacoes):
+        self.avaliacoes = avaliacoes
+
+    def mostrar_avaliacoes(self):
+        return self.avaliacoes
+
+    def calcula_media_notas(self):
+        pass
+        
+
+
 
 class Filme(Midia):
     """Representa o filme de um catálogo
@@ -123,25 +125,14 @@ class Filme(Midia):
         return self._nota
     @nota.setter
     def nota(self, nota):
-        if 0 <= nota <= 5:
+        if 0 <= nota <= 10:
             self._nota = nota
         else:
-            raise ValueError("A nota deve ser um número entre 0 e 5")    
+            raise ValueError("A nota deve ser um número entre 0 e 10")    
 
     def __repr__(self):
         return f"Filme(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, nota = {self.nota})"
 
-    def avaliar_filme(self, nota: float):
-        # TODO: Essa função ainda é um exemplo, visto que depende de como a classe Avaliacao será construída 
-        if self.nota is not None:
-            self.avaliacoes.remove(self.nota)
-            self.nota = nota
-        else:
-            self.nota = nota
-            self.avaliacoes.append(nota)
-
-    def ver_avaliacoes(self):
-        return self.avaliacoes
 
 
 
@@ -195,10 +186,10 @@ class Serie(Midia):
     def nota_serie(self, nota):
         if nota is None:
             self._nota_serie = None
-        elif 0 <= nota <= 5:
+        elif 0 <= nota <= 10:
             self._nota_serie = nota
         else:
-            raise ValueError("A nota deve ser um número entre 0 e 5")
+            raise ValueError("A nota deve ser um número entre 0 e 10")
 
     def __repr__(self):
         return f"Serie(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, temporadas = {self.temporadas}, nota = {self.nota_serie}, total_temporadas = {self.total_temporadas}, total_episodios = {self.total_episodios})"
@@ -206,26 +197,7 @@ class Serie(Midia):
     def ver_temporadas(self):
         return self.temporadas
         
-    def avaliar_serie(self, nota: float):
-        # TODO: Esta função ainda é um exemplo, visto que dependerá de como a classe Avaliacao será construída
-        if self.nota_serie is not None:
-            self.avaliacoes.remove(nota)
-            self.nota_serie = nota
-        else:
-            self.nota_serie = nota
-        self.avaliacoes.append(nota)
-
-    def ver_avaliacoes(self):
-        return self.avaliacoes
-        
-    '''def media_avaliacao_temporadas(self):
-        # Essa função depende de como a classe Avaliacao será construida
-        soma = 0
-        for avaliacao in self.avaliacoes:
-            soma += avaliacao
-        media = soma / len(self.avaliacoes)
-        return media
-    '''
+    
 
 
 class Temporada:
@@ -282,10 +254,10 @@ class Temporada:
         return self._nota_temporada
     @nota_temporada.setter
     def nota_temporada(self, nota):
-        if 0 <= nota <= 5:
+        if 0 <= nota <= 10:
             self._nota_temporada = nota
         else:
-            raise ValueError("A nota deve ser um número entre 0 e 5")
+            raise ValueError("A nota deve ser um número entre 0 e 10")
 
     def __repr__(self):
         return f"Temporada(numero = {self.numero}, episodios = {self.episodios}, _total_episodios = {self._total_episodios}, _nota_temporada = {self._nota_temporada}, avaliacos = {self.avaliacoes})"
@@ -352,23 +324,11 @@ class Episodio(Midia):
         return self._nota
     @nota.setter
     def nota(self, nota):
-        if 0 <= nota <= 5:
+        if 0 <= nota <= 10:
             self._nota = nota
         else:
-            raise ValueError("A nota deve ser um número entre 0 e 5")  
+            raise ValueError("A nota deve ser um número entre 0 e 10")  
 
     def __repr__(self):
         return f"Episodio(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, numero = {self.numero}, nota = {self.nota})"
     
-    def avaliar_episodio(self, nota):
-        # TODO: Esta função ainda é um exemplo, visto que dependerá de como a classe Avaliacao será construída
-        if self.nota != None:
-            self.avaliacoes.remove(self.nota)
-            self.nota = nota
-        else:
-            self.nota = nota
-        self.avaliacoes.append(nota)
-
-
-    def ver_avaliacoes(self):
-        return self.avaliacoes

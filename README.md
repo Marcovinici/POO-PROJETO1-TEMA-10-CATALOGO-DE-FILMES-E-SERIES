@@ -138,10 +138,11 @@ classDiagram
     %% Avaliações
     class Avaliacao {
         +str tipo
+        +str usuario
         +str comentario
         +float nota
-        +adicionar_nota()
-        +adicionar_comentario()
+        +alterar_nota()
+        +alterar_comentario()
     }
 
 
