@@ -18,31 +18,31 @@ class Usuario:
 
     @property
     def nome_de_usuario(self):
-        return self.nome_de_usuario
+        return self._nome_de_usuario
     @nome_de_usuario.setter
     def nome_de_usuario(self, novo_nome):
         if 0 < len(novo_nome) <= 100:
-            self.nome_de_usuario = novo_nome
+            self._nome_de_usuario = novo_nome
         else:
             raise ValueError("O nome de usuário deve ter entre 1 e 100 caracteres")
 
     @property
     def senha(self):
-        return self.senha
+        return self._senha
     @senha.setter
     def senha(self, nova_senha):
         if len(nova_senha) > 4:
-            self.senha = nova_senha
+            self._senha = nova_senha
         else:
             raise ValueError("A senha deve possuir ao menos 4 caracteres")
 
     @property
     def nome(self):
-        return self.nome
+        return self._nome
     @nome.setter
     def nome(self, novo_nome):
         if len(novo_nome) > novo_nome.count(" ") and len(novo_nome) > 0:
-            self.nome = novo_nome
+            self._nome = novo_nome
         else:
             raise ValueError("O nome não pode ser vazio")
 

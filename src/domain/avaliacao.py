@@ -25,21 +25,21 @@ class Avaliacao:
 
     @property
     def nota(self):
-        return self.nota
+        return self._nota
     @nota.setter
     def nota(self, nova_nota):
         if 0 <= nova_nota <= 10:
-            self.nota = nova_nota
+            self._nota = nova_nota
         else:
             raise ValueError("A nota presente na avaliação deve ser um inteiro de 0 a 10")
 
     @property
     def comentario(self):
-        return self.comentario
+        return self._comentario
     @comentario.setter
     def comentario(self, novo_comentario):
         if len(novo_comentario) > 0 and len(novo_comentario) > novo_comentario.count(" "):
-            self.comentario = novo_comentario
+            self._comentario = novo_comentario
         else:
             raise ValueError("O novo comentário não pode ser vazio")
 
