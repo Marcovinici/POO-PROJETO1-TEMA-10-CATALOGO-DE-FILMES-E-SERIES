@@ -2,7 +2,7 @@ import sqlite3
 
 conexao = sqlite3.connect("src/database/banco.db")
 cursor = conexao.cursor()
-
+'''
 conexao.executescript("""
     CREATE TABLE IF NOT EXISTS usuarios (
         nome_de_usuario VARCHAR(100) PRIMARY KEY,
@@ -37,8 +37,9 @@ conexao.executescript("""
 
     );
 """)
-
-
-
-conexao.commit()
-conexao.close()
+'''
+'''
+cursor.execute(
+    "DELETE FROM usuarios WHERE nome_de_usuario == 'adm'"
+)
+'''

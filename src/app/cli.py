@@ -6,9 +6,13 @@ repo_usuario = UsuarioRepository("src/database/banco.db")
 
 def logar(args):
     print(repo_usuario.login(args.nome_de_usuario, args.senha))
-
+    repo_usuario.existe_usuario(args.nome_de_usuario)
+    
 def cadastrar_usuario(args):
-    novo_usuario = Usuario(args.nome_de_usuario, args.senha, args.nome)
+    if args.admin :
+        novo_usuario = Usuario(args.nome_de_usuario, args.senha, args.nome, "ADMINISTRADOR")
+    else:
+        novo_usuario = Usuario(args.nome_de_usuario, args.senha, args.nome)
     print(repo_usuario.cadastrar(novo_usuario))
 
 def main():
@@ -40,8 +44,13 @@ def main():
     cmd_cad_usuario.add_argument("nome_de_usuario", type=str, help="Nome de usuário")
     cmd_cad_usuario.add_argument("senha", type=str, help="Senha do usuário")
     cmd_cad_usuario.add_argument("nome", type=str, help="Nome real do usuário")
+    cmd_cad_usuario.add_argument("--admin", action="store_true", help="Define o usuário como Administrador")
 
     cmd_cad_usuario.set_defaults(func=cadastrar_usuario)
+
+    # COMANDOS DE USUÁRIO ADMINISTRADOR
+    
+
     # LENDO ARGS
     args = parser.parse_args()
 
