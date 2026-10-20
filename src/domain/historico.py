@@ -5,7 +5,7 @@ class Historico:
     do histórico de consumo.
 
     Attributes:
-    midias_assistidas (list[Midia]): Lista contendo as mídias assistidas
+    midias_assistidas (list[MidiaAssistida]): Lista contendo as mídias assistidas
     """
     def __init__(self):
         pass

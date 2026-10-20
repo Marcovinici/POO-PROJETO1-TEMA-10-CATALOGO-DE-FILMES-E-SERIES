@@ -17,3 +17,7 @@ class Lista:
         pass
     def remover_da_lista(self):
         pass
+
+
+class ListaPersonalizada(Lista):
+    pass
