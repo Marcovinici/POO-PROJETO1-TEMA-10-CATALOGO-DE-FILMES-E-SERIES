@@ -29,7 +29,6 @@ classDiagram
         +str titulo
         +str genero
         +int ano
-        +int duracao
         +str classificacao
         +List~str~ elenco
         +List~str~ diretor
@@ -49,7 +48,6 @@ classDiagram
     class Lista {
         +str nome_da_lista
         +List~Midia~midias
-        +criar_lista()
         +adicionar_na_lista()
         +remover_da_lista()
     }
@@ -92,6 +90,7 @@ classDiagram
 
     %% Heranças de Midia 
     class Filme {
+        +int duracao
         +float nota
         +List~Avaliacao~avaliacoes
         +avaliar_filme()
@@ -126,6 +125,7 @@ classDiagram
     }
 
     class Episodio {
+        +int duracao
         +int numero
         +float nota
         +List~Avaliacao~avaliacoes

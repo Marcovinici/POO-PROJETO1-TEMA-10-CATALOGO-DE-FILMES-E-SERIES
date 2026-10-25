@@ -39,7 +39,7 @@ def main():
     cmd_logar.set_defaults(func=logar)
     # Comando 'cadastrar'
     cmd_cad_usuario = subparsers.add_parser(
-        "cad_usuario", help="O usuário pode cadastrar um nomvo usuario"
+        "cad-usuario", help="O usuário pode cadastrar um nomvo usuario"
     )
     cmd_cad_usuario.add_argument("nome_de_usuario", type=str, help="Nome de usuário")
     cmd_cad_usuario.add_argument("senha", type=str, help="Senha do usuário")

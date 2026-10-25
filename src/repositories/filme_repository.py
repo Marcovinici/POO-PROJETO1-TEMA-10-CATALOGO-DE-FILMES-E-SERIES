@@ -1,5 +1,6 @@
 from pathlib import Path
 import sqlite3
+from ..domain.midias import Filme
 
 class FilmeRepository:
     def __init__(self, caminho):
@@ -15,8 +16,7 @@ class FilmeRepository:
         with self.conectar() as conexao:
             conexao.execute("""
             CREATE TABLE IF NOT EXISTS filmes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                titulo TEXT NOT NULL,
+                titulo TEXT NOT NULL PRIMARY KEY,
                 duracao INT NOT NULL,
                 ano INTEGER NOT NULL,
                 classificacao TEXT NOT NULL,
@@ -24,6 +24,7 @@ class FilmeRepository:
                 elenco TEXT,
                 diretor TEXT,
                 roteirista TEXT
+                )
             """)
 
     def adicionar_filme(self, filme):
@@ -35,8 +36,8 @@ class FilmeRepository:
             )
             resultado = cursor.fetchone()
 
-        if str(resultado[0]) == self.titulo:
-            return f"O filme com o título '{self.titulo}' já existe."
+        if str(resultado[0]) == filme.titulo:
+            return f"O filme com o título '{filme.titulo}' já existe."
 
         if resultado is None:
             with self.conectar() as conexao:
@@ -55,7 +56,6 @@ class FilmeRepository:
             cursor.execute(
                 "SELECT * FROM filmes"
             )
-            filmes = cursor.fetchall
+            filmes = cursor.fetchall()
 
-        for filme in filmes:
-            print(filme)
+        return [Filme(titulo=filme['titulo'], duracao=filme['duracao'], ano=filme['ano'], classificacao=filme['classificacao'], genero=filme['genero'], elenco=filme['elenco'], diretor=filme['diretor'], roteirista=filme['roteirista']) for filme in filmes]
