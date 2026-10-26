@@ -46,6 +46,16 @@ class Usuario:
         else:
             raise ValueError("O nome não pode ser vazio")
 
+    @property
+    def tipo(self):
+        return self._tipo
+    @tipo.setter
+    def tipo(self, tipo):
+        if tipo == "PADRAO" or tipo == "ADMIN":
+            self._tipo = tipo
+        else:
+            raise ValueError("Tipo inválido para usuário")
+
     
     def mudar_nome_de_usuario(self, novo_nome):
         self.nome_de_usuario = novo_nome

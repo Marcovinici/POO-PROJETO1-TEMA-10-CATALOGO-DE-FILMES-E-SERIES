@@ -10,6 +10,7 @@ class UsuarioRepository:
     def conectar(self):
         conexao = sqlite3.connect(self.caminho)
         conexao.row_factory = sqlite3.Row
+        conexao.execute("PRAGMA foreign_keys = ON;")
         return conexao
 
 
@@ -20,7 +21,7 @@ class UsuarioRepository:
                     nome_de_usuario VARCHAR(100) PRIMARY KEY,
                     senha INTEGER NOT NULL,
                     nome TEXT NOT NULL,
-                    tipo TEXT NOT NULL
+                    tipo TEXT NOT NULL CHECK(tipo IN ('PADRAO', 'ADMIN'))
                     )
                 """)
 

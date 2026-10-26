@@ -1,7 +1,15 @@
 import argparse
-from .. domain.usuario import Usuario
-from .. repositories.usuario_repository import UsuarioRepository
+from ..repositories.sessao import Sessao
+from ..domain.usuario import Usuario
+from ..repositories.usuario_repository import UsuarioRepository
+from ..domain.midias import Filme, Serie
+from ..repositories.filme_repository import FilmeRepository
+from ..repositories.serie_repository import SerieRepository
+from ..domain.listas import ListaPersonalizada
+from ..repositories.listas_repository import ListasRepository
 
+
+# Instanciando os repositórios
 repo_usuario = UsuarioRepository("src/database/banco.db")
 
 def logar(args):
