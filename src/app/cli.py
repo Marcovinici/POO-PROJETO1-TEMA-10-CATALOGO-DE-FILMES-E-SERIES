@@ -113,6 +113,48 @@ def listar_series(args):
     else:
         print("Não há usuário logado")
 
+def adicionar_lista(args):
+    usuario = sessao.obter_usuario_logado()
+    if usuario:
+        repo_listas.criar_lista(args.nome_da_lista, usuario.nome_de_usuario)
+    else:
+        print("Não há usuário logado")
+
+def listar_listas(args):
+    usuario = sessao.obter_usuario_logado()
+    if usuario:
+        listas = repo_listas.listar_listas_por_usuario(usuario.nome_de_usuario)
+        print("SUAS LISTAS:")
+        print("-"*30)
+        for lista in listas:
+            print(lista.nome)
+    else:
+        print("Não há usuário logado")
+    
+def adicionar_filme_na_lista(args):
+    usuario = sessao.obter_usuario_logado()
+    if usuario:
+        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista)
+        repo_listas.adicionar_filme_na_lista(id_lista, args.titulo)
+    else:
+        print("Não há usuário logado")
+
+def adicionar_serie_na_lista(args):
+    usuario = sessao.obter_usuario_logado()
+    if usuario:
+        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista)
+        repo_listas.adicionar_serie_na_lista(id_lista, args.titulo)
+    else:
+        print("Não há usuário logado") 
+
+def mostrar_lista(args):
+    usuario = sessao.obter_usuario_logado()
+    if usuario:
+        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista)
+        repo_listas.obter_lista_com_midias(id_lista)
+    else:
+        print("Não há usuário logado") 
+
 # ----> FUNÇÕES DE ADMIN
 def listar_usuarios(args):
     usuario = sessao.obter_usuario_logado()
@@ -125,6 +167,8 @@ def listar_usuarios(args):
             print(f"O usuário '{usuario.nome_de_usuario}' não tem permissão de administrador")
     else:
         print("O usuário não está logado")
+
+
 
 # -------------------------------------MAIN---------------------------------------
 def main():
@@ -212,6 +256,14 @@ def main():
 
     addcmd_serie.set_defaults(func=adicionar_serie)
 
+    # adicionar lista
+    addcmd_lista = subparsers_adicionar.add_parser(
+        "lista", help="Utilizando o subcomando lista em adicionar, o usuário pode adicionar uma lista ao catálogo"
+    )
+    addcmd_lista.add_argument("nome_da_lista", type=str)
+
+    addcmd_lista.set_defaults(func=adicionar_lista)
+
     # -> comando listar e seus subcomandos
     cmd_listar = subparsers.add_parser(
         "listar", help="Permite listar todos os objetos de determinado tipo do catálogo"
@@ -232,6 +284,12 @@ def main():
     )
 
     listcmd_series.set_defaults(func=listar_series)
+
+    listcmd_listas = subparsers_listar.add_parser(
+        "listas", help="Utilizando o subcomando listas em listar, o programa imprimirá todas as listas do catálogo"
+    )
+
+    listcmd_listas.set_defaults(func=listar_listas)
 
     # --> COMANDOS DE USUÁRIO ADMINISTRADOR
     cmd_listar_usuarios = subparsers.add_parser(

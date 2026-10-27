@@ -1,10 +1,11 @@
-from pathlib import Path
 import sqlite3
-from domain.midias import Filme
-from domain.midias import Serie
+from pathlib import Path
 from domain.listas import ListaPersonalizada
+from domain.midias import Filme, Serie
+
 
 class ListasRepository:
+
     def __init__(self, caminho):
         self.caminho = Path(caminho)
         self.criar_tabelas()
@@ -14,6 +15,11 @@ class ListasRepository:
         conexao.row_factory = sqlite3.Row
         conexao.execute("PRAGMA foreign_keys = ON;")
         return conexao
+
+    def _string_para_lista(self, texto: str | None) -> list[str]:
+        if not texto:
+            return []
+        return texto.split(", ")
 
     def criar_tabelas(self):
         with self.conectar() as conexao:
@@ -28,39 +34,40 @@ class ListasRepository:
                     UNIQUE(nome, usuario_id)
                 );
 
-                -- Tabela intermediária para o relacionamento M:N (Filmes e Séries)
+                -- Tabela intermediária usando os títulos como chave estrangeira
                 CREATE TABLE IF NOT EXISTS lista_midia (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     lista_id INTEGER NOT NULL,
-                    filme_id INTEGER,
-                    serie_id INTEGER,
-                    PRIMARY KEY (lista_id, filme_id, serie_id),
+                    filme_titulo TEXT,
+                    serie_titulo TEXT,
                     FOREIGN KEY (lista_id) REFERENCES listas(id) ON DELETE CASCADE,
-                    FOREIGN KEY (filme_id) REFERENCES filmes(id) ON DELETE CASCADE,
-                    FOREIGN KEY (serie_id) REFERENCES series(id) ON DELETE CASCADE,
-                    -- Garante que OU tem um filme_id OU tem um serie_id (nunca os dois ou nenhum)
+                    FOREIGN KEY (filme_titulo) REFERENCES filmes(titulo) ON DELETE CASCADE,
+                    FOREIGN KEY (serie_titulo) REFERENCES series(titulo) ON DELETE CASCADE,
                     CHECK (
-                        (filme_id IS NOT NULL AND serie_id IS NULL) OR
-                        (filme_id IS NULL AND serie_id IS NOT NULL)
-                    )
+                        (filme_titulo IS NOT NULL AND serie_titulo IS NULL) OR
+                        (filme_titulo IS NULL AND serie_titulo IS NOT NULL)
+                    ),
+                    UNIQUE(lista_id, filme_titulo, serie_titulo)
                 );
             """)
 
-# --- OPERAÇÕES NA TABELA 'listas' ---
+    # --- OPERAÇÕES NA TABELA 'listas' ---
 
     def criar_lista(self, nome: str, usuario_id: str):
         """Cria uma nova lista associada ao nome do usuário e retorna o ID gerado."""
-        with self.conectar() as conn:
-            cursor = conn.cursor()
+        with self.conectar() as conexao:
+            cursor = conexao.cursor()
             cursor.execute(
                 "INSERT INTO listas (nome, usuario_id) VALUES (?, ?)",
                 (nome, usuario_id),
             )
+            conexao.commit()
             return cursor.lastrowid
 
     def listar_listas_por_usuario(self, usuario_id: str):
         """Retorna todas as listas cadastradas por um determinado usuário."""
-        with self.conectar() as conn:
-            cursor = conn.cursor()
+        with self.conectar() as conexao:
+            cursor = conexao.cursor()
             cursor.execute(
                 "SELECT * FROM listas WHERE usuario_id = ?", (usuario_id,)
             )
@@ -69,68 +76,84 @@ class ListasRepository:
             return [
                 ListaPersonalizada(
                     nome_da_lista=row["nome"],
-                    usuario_id=row["usuario_id"],
+                    usuario=row["usuario_id"],
                     id=row["id"],
                 )
                 for row in rows
             ]
 
+    def buscar_id_por_nome(
+        self, nome_da_lista: str, usuario_id: str
+    ) -> int | None:
+        with self.conectar() as conexao:
+            cursor = conexao.cursor()
+            cursor.execute(
+                "SELECT id FROM listas WHERE nome = ? AND usuario_id = ?",
+                (nome_da_lista, usuario_id),
+            )
+            row = cursor.fetchone()
+            return row["id"] if row else None
+
     # --- OPERAÇÕES NA TABELA INTERMEDIÁRIA 'lista_midia' ---
 
-    def adicionar_filme_na_lista(self, lista_id: int, filme_id: int):
-        """Associa um filme à lista."""
-        with self.conectar() as conn:
-            cursor = conn.cursor()
+    def adicionar_filme_na_lista(self, lista_id: int, filme_titulo: str):
+        """Associa um filme à lista usando o título do filme."""
+        with self.conectar() as conexao:
+            cursor = conexao.cursor()
             cursor.execute(
                 """
-                INSERT OR IGNORE INTO lista_midia (lista_id, filme_id, serie_id)
+                INSERT OR IGNORE INTO lista_midia (lista_id, filme_titulo, serie_titulo)
                 VALUES (?, ?, NULL)
             """,
-                (lista_id, filme_id),
+                (lista_id, filme_titulo),
             )
+            conexao.commit()
 
-    def adicionar_serie_na_lista(self, lista_id: int, serie_id: int):
-        """Associa uma série à lista."""
-        with self.conectar() as conn:
-            cursor = conn.cursor()
+    def adicionar_serie_na_lista(self, lista_id: int, serie_titulo: str):
+        """Associa uma série à lista usando o título da série."""
+        with self.conectar() as conexao:
+            cursor = conexao.cursor()
             cursor.execute(
                 """
-                INSERT OR IGNORE INTO lista_midia (lista_id, filme_id, serie_id)
+                INSERT OR IGNORE INTO lista_midia (lista_id, filme_titulo, serie_titulo)
                 VALUES (?, NULL, ?)
             """,
-                (lista_id, serie_id),
+                (lista_id, serie_titulo),
             )
+            conexao.commit()
 
-    def remover_filme_da_lista(self, lista_id: int, filme_id: int):
+    def remover_filme_da_lista(self, lista_id: int, filme_titulo: str):
         """Remove a associação de um filme com a lista."""
-        with self.conectar() as conn:
-            cursor = conn.cursor()
+        with self.conectar() as conexao:
+            cursor = conexao.cursor()
             cursor.execute(
                 """
                 DELETE FROM lista_midia
-                WHERE lista_id = ? AND filme_id = ?
+                WHERE lista_id = ? AND filme_titulo = ?
             """,
-                (lista_id, filme_id),
+                (lista_id, filme_titulo),
             )
+            conexao.commit()
 
-    def remover_serie_da_lista(self, lista_id: int, serie_id: int):
+    def remover_serie_da_lista(self, lista_id: int, serie_titulo: str):
         """Remove a associação de uma série com a lista."""
-        with self.conectar() as conn:
-            cursor = conn.cursor()
+        with self.conectar() as conexao:
+            cursor = conexao.cursor()
             cursor.execute(
                 """
                 DELETE FROM lista_midia
-                WHERE lista_id = ? AND serie_id = ?
+                WHERE lista_id = ? AND serie_titulo = ?
             """,
-                (lista_id, serie_id),
+                (lista_id, serie_titulo),
             )
+            conexao.commit()
 
     # --- MONTAGEM DO OBJETO COMPLETO DO DOMAIN ---
 
     def obter_lista_com_midias(self, lista_id: int):
         """Recupera a lista do banco montando as instâncias de Filme e Serie."""
-        with self.conectar() as conn:
-            cursor = conn.cursor()
+        with self.conectar() as conexao:
+            cursor = conexao.cursor()
 
             # 1. Busca os dados da lista
             cursor.execute("SELECT * FROM listas WHERE id = ?", (lista_id,))
@@ -144,11 +167,11 @@ class ListasRepository:
                 id=row_lista["id"],
             )
 
-            # 2. Carrega todos os FILMES vinculados
+            # 2. Carrega todos os FILMES vinculados (JOIN usando titulo)
             cursor.execute(
                 """
                 SELECT f.* FROM filmes f
-                JOIN lista_midia lm ON f.id = lm.filme_id
+                JOIN lista_midia lm ON f.titulo = lm.filme_titulo
                 WHERE lm.lista_id = ?
             """,
                 (lista_id,),
@@ -156,20 +179,21 @@ class ListasRepository:
             for row in cursor.fetchall():
                 filme = Filme(
                     titulo=row["titulo"],
+                    duracao=row["duracao"],
                     ano=row["ano"],
                     classificacao=row["classificacao"],
                     genero=row["genero"],
-                    elenco=row["elenco"],
-                    diretor=row["diretor"],
-                    roteirista=row["roteirista"],
+                    elenco=self._string_para_lista(row["elenco"]),
+                    diretor=self._string_para_lista(row["diretor"]),
+                    roteirista=self._string_para_lista(row["roteirista"]),
                 )
                 lista_obj.adicionar_na_lista(filme)
 
-            # 3. Carrega todas as SÉRIES vinculadas
+            # 3. Carrega todas as SÉRIES vinculadas (JOIN usando titulo)
             cursor.execute(
                 """
                 SELECT s.* FROM series s
-                JOIN lista_midia lm ON s.id = lm.serie_id
+                JOIN lista_midia lm ON s.titulo = lm.serie_titulo
                 WHERE lm.lista_id = ?
             """,
                 (lista_id,),
@@ -180,9 +204,9 @@ class ListasRepository:
                     ano=row["ano"],
                     classificacao=row["classificacao"],
                     genero=row["genero"],
-                    elenco=row["elenco"],
-                    diretor=row["diretor"],
-                    roteirista=row["roteirista"],
+                    elenco=self._string_para_lista(row["elenco"]),
+                    diretor=self._string_para_lista(row["diretor"]),
+                    roteirista=self._string_para_lista(row["roteirista"]),
                 )
                 lista_obj.adicionar_na_lista(serie)
 
