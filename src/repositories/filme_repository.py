@@ -1,6 +1,6 @@
 from pathlib import Path
 import sqlite3
-from ..domain.midias import Filme
+from domain.midias import Filme
 
 class FilmeRepository:
     def __init__(self, caminho):

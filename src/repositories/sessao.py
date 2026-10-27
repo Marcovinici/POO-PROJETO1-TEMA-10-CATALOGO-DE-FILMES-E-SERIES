@@ -1,6 +1,6 @@
 from pathlib import Path
 import sqlite3
-from ..domain.usuario import Usuario
+from domain.usuario import Usuario
 
 class Sessao:
     def __init__(self, caminho):

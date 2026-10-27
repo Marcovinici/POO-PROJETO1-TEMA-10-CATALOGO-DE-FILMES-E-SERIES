@@ -1,6 +1,6 @@
 from pathlib import Path
 import sqlite3
-from .. domain.midias import Serie
+from domain.midias import Serie
 
 class SerieRepository():
     def __init__ (self, caminho):

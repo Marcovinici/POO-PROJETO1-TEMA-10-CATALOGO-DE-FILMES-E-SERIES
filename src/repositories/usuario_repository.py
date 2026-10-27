@@ -1,5 +1,6 @@
 from pathlib import Path
 import sqlite3
+from domain.usuario import Usuario
 
 class UsuarioRepository:
     def __init__(self, caminho):
@@ -19,7 +20,7 @@ class UsuarioRepository:
             conexao.execute("""
                 CREATE TABLE IF NOT EXISTS usuarios (
                     nome_de_usuario VARCHAR(100) PRIMARY KEY,
-                    senha INTEGER NOT NULL,
+                    senha TEXT NOT NULL,
                     nome TEXT NOT NULL,
                     tipo TEXT NOT NULL CHECK(tipo IN ('PADRAO', 'ADMIN'))
                     )
@@ -74,9 +75,9 @@ class UsuarioRepository:
 
     def login(self, nome_de_usuario, senha):
         if self.existe_usuario(nome_de_usuario) and self.senha_verificada(nome_de_usuario, senha):
-            return f"Bem vindo ao Catálogo de Midias CLI, {nome_de_usuario}"
+            return True
         else:
-            return "Usuário e/ou senha incorreto(s), se ainda não tem um usuário cadastre-se"
+            return False
 
     def usuario(self, nome_de_usuario):
         with self.conectar() as conexao:
@@ -98,5 +99,12 @@ class UsuarioRepository:
             )
         usuarios = cursor.fetchall()
 
-        for usuario in usuarios:
-            print(usuario)
+        return[
+            Usuario(
+                nome_de_usuario=usuario["nome_de_usuario"],
+                senha=usuario["senha"],
+                nome=usuario["nome"],
+                tipo=usuario["tipo"]
+            )
+            for usuario in usuarios
+        ]

@@ -25,6 +25,10 @@ dev = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+# Caminho para a main
+[project.scripts]
+pipocli = "app.cli:main"
+
 # Configuração simples do pytest
 [tool.pytest.ini_options]
 testpaths = ["tests"]

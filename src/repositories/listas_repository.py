@@ -1,8 +1,8 @@
 from pathlib import Path
 import sqlite3
-from ..domain.midias import Filme
-from ..domain.midias import Serie
-from ..domain.listas import ListaPersonalizada
+from domain.midias import Filme
+from domain.midias import Serie
+from domain.listas import ListaPersonalizada
 
 class ListasRepository:
     def __init__(self, caminho):
