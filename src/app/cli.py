@@ -32,7 +32,19 @@ def cad_usuario(args):
     print(repo_usuario.cadastrar(novo_usuario))
 
 # FUNÇOES DE USUÁRIO PADRAO
+def usuario(args):
+    usuario = sessao.obter_usuario_logado()
+    if usuario:
+        print(f"Usuário: {usuario.nome_de_usuario}; nome: {usuario.nome}; tipo: {usuario.tipo}")
+    else:
+        print("Nenhum usuário logado")
 
+def logout(args):
+    usuario = sessao.obter_usuario_logado()
+    if usuario:
+        sessao.encerrar_sessao()
+    else:
+        print("Não há usuário logado")
 
 # FUNÇÕES DE ADMIN
 def listar_usuarios(args):
@@ -80,6 +92,23 @@ def main():
     cmd_cad_usuario.add_argument("--admin", action="store_true", help="Define o usuário como Administrador")
 
     cmd_cad_usuario.set_defaults(func=cad_usuario)
+
+    # COMANDOS DE USUÁRIO LOGADO
+
+    # Comando usuario
+    cmd_usuario = subparsers.add_parser(
+        "usuario", help="Imprime informações sobre o usuario que está logado no momento"
+    )
+
+    cmd_usuario.set_defaults(func=usuario)
+
+    # Comando logout
+    cmd_logout = subparsers.add_parser(
+        "logout", help="Desloga o usuario"
+    )
+
+    cmd_logout.set_defaults(func=logout)
+
 
     # COMANDOS DE USUÁRIO ADMINISTRADOR
     cmd_listar_usuarios = subparsers.add_parser(
