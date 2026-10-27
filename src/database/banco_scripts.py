@@ -48,10 +48,7 @@ cursor.execute(
     "DROP TABLE IF EXISTS filmes"
 )
 '''
-cursor.execute("""
-    DELETE FROM usuarios WHERE nome_de_usuario == 'adm'
-""")
-
+cursor.execute("DROP TABLE serie;")
 conexao.commit()
 cursor.close()
 conexao.close()

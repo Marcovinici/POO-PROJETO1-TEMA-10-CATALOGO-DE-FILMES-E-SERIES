@@ -27,17 +27,18 @@ class FilmeRepository:
                 )
             """)
 
-    def adicionar_filme(self, filme):
+    def adicionar_filme(self, filme: Filme):
+        elenco = ", ".join(filme.elenco) if isinstance(filme.elenco, list) else filme.elenco or ""
+        diretor = ", ".join(filme.diretor) if isinstance(filme.diretor, list) else filme.diretor or ""
+        roteirista = ", ".join(filme.roteirista) if isinstance(filme.roteirista, list) else filme.roteirista or ""
+
         with self.conectar() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
             "SELECT titulo FROM filmes WHERE titulo == ?",
-            (filme.titulo)
+            (filme.titulo,)
             )
             resultado = cursor.fetchone()
-
-        if str(resultado[0]) == filme.titulo:
-            return f"O filme com o título '{filme.titulo}' já existe."
 
         if resultado is None:
             with self.conectar() as conexao:
@@ -45,9 +46,12 @@ class FilmeRepository:
                 INSERT INTO filmes (titulo, duracao, ano, classificacao, genero, elenco, diretor, roteirista)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (filme.titulo, filme.duracao, filme.ano, filme.classificacao, filme.genero, filme.elenco, filme.diretor, filme.roteirista),
+                (filme.titulo, filme.duracao, filme.ano, filme.classificacao, filme.genero, elenco, diretor, roteirista),
                 )
+                conexao.commit()
             return "Adição de filme bem sucedida"
+
+        return f"O filme com o título '{filme.titulo}' já existe."
     
 
     def listar_filmes(self):
@@ -58,4 +62,4 @@ class FilmeRepository:
             )
             filmes = cursor.fetchall()
 
-        return [Filme(titulo=filme['titulo'], duracao=filme['duracao'], ano=filme['ano'], classificacao=filme['classificacao'], genero=filme['genero'], elenco=filme['elenco'], diretor=filme['diretor'], roteirista=filme['roteirista']) for filme in filmes]
+        return [Filme(titulo=filme['titulo'], duracao=filme['duracao'], ano=filme['ano'], classificacao=filme['classificacao'], genero=filme['genero'], elenco=str(filme['elenco']).split(", "), diretor=str(filme['diretor']).split(", "), roteirista=str(filme['roteirista']).split(", ")) for filme in filmes]
