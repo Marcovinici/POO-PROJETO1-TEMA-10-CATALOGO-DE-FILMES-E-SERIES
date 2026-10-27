@@ -1,4 +1,4 @@
-# POO-PROJETO1-TEMA-10-CATALOGO-DE-FILMES-E-SERIES
+# PipoCLI 🍿
  Esse projeto faz parte da disciplina de Programação Orientada a Objetos (ES0008), feito para trabalhar os conhecimentos adquiridos ao longo da cadeira e nas disciplinas anteriores.
 
 ## Descrição  do Projeto
@@ -8,6 +8,44 @@ Sistema de linha de comando (CLI) ou API mínima (FastAPI/Flask, opcional) para 
 ## Objetivos
 
 O sistema deve permitir acompanhar o progresso de séries e comparar avaliações entre mídias, gerenciar o perfil do usuário e configurações.
+
+## Estrutura de Pastas
+```text
+POO-PROJETO1-TEMA-10-CATALOGO-DE-FILMES-E-SERIES/
+├── README.md
+├── LICENSE
+├── pyproject.toml
+├── src/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   └── cli.py
+│   ├── domain/
+│   │   ├── __init__.py
+│   │   ├── avaliacao.py
+│   │   ├── catalogo.py
+│   │   ├── config.py
+│   │   ├── historico.py
+│   │   ├── listas.py
+│   │   ├── midia_assistida.py
+│   │   ├── midias.py
+│   │   ├── relatorios.py
+│   │   └── usuario.py
+│   ├── repositories/
+│   │   ├── __init__.py
+│   │   ├── avaliacao_repository.py
+│   │   ├── catalogo_repository.py
+│   │   ├── filme_repository.py
+│   │   ├── historico_repository.py
+│   │   ├── listas_repository.py
+│   │   ├── relatorios_repository.py
+│   │   ├── serie_repository.py
+│   │   ├── sessao.py
+│   │   └── usuario_repository.py
+│   └── database/
+│       └── banco.db
+└── tests/
+    └── test_01.py
+```
 
 ## Estrutura de Classes
 ```mermaid
@@ -29,7 +67,6 @@ classDiagram
         +str titulo
         +str genero
         +int ano
-        +int duracao
         +str classificacao
         +List~str~ elenco
         +List~str~ diretor
@@ -49,7 +86,6 @@ classDiagram
     class Lista {
         +str nome_da_lista
         +List~Midia~midias
-        +criar_lista()
         +adicionar_na_lista()
         +remover_da_lista()
     }
@@ -92,6 +128,7 @@ classDiagram
 
     %% Heranças de Midia 
     class Filme {
+        +int duracao
         +float nota
         +List~Avaliacao~avaliacoes
         +avaliar_filme()
@@ -126,6 +163,7 @@ classDiagram
     }
 
     class Episodio {
+        +int duracao
         +int numero
         +float nota
         +List~Avaliacao~avaliacoes

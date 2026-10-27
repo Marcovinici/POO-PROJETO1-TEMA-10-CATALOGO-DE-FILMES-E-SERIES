@@ -12,7 +12,7 @@ class Usuario:
     """
     def __init__(self, nome_de_usuario, senha, nome, tipo = "PADRAO"):
         self.nome_de_usuario = nome_de_usuario
-        self.senha = senha
+        self.senha = str(senha)
         self.nome = nome
         self.tipo = tipo
 
@@ -46,9 +46,21 @@ class Usuario:
         else:
             raise ValueError("O nome não pode ser vazio")
 
+    @property
+    def tipo(self):
+        return self._tipo
+    @tipo.setter
+    def tipo(self, tipo):
+        if tipo == "PADRAO" or tipo == "ADMIN":
+            self._tipo = tipo
+        else:
+            raise ValueError("Tipo inválido para usuário")
+
+    def __str__(self):
+        return f"{self._nome_de_usuario}: {self.nome}"
     
     def mudar_nome_de_usuario(self, novo_nome):
         self.nome_de_usuario = novo_nome
 
     def mudar_senha(self, nova_senha):
-        self.senha = nova_senha
+        self.senha = str(nova_senha)

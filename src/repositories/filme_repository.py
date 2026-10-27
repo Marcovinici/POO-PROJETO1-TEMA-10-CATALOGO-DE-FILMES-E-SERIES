@@ -1,5 +1,6 @@
 from pathlib import Path
 import sqlite3
+from domain.midias import Filme
 
 class FilmeRepository:
     def __init__(self, caminho):
@@ -15,8 +16,7 @@ class FilmeRepository:
         with self.conectar() as conexao:
             conexao.execute("""
             CREATE TABLE IF NOT EXISTS filmes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                titulo TEXT NOT NULL,
+                titulo TEXT NOT NULL PRIMARY KEY,
                 duracao INT NOT NULL,
                 ano INTEGER NOT NULL,
                 classificacao TEXT NOT NULL,
@@ -24,19 +24,21 @@ class FilmeRepository:
                 elenco TEXT,
                 diretor TEXT,
                 roteirista TEXT
+                )
             """)
 
-    def adicionar_filme(self, filme):
+    def adicionar_filme(self, filme: Filme):
+        elenco = ", ".join(filme.elenco) if isinstance(filme.elenco, list) else filme.elenco or ""
+        diretor = ", ".join(filme.diretor) if isinstance(filme.diretor, list) else filme.diretor or ""
+        roteirista = ", ".join(filme.roteirista) if isinstance(filme.roteirista, list) else filme.roteirista or ""
+
         with self.conectar() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
             "SELECT titulo FROM filmes WHERE titulo == ?",
-            (filme.titulo)
+            (filme.titulo,)
             )
             resultado = cursor.fetchone()
-
-        if str(resultado[0]) == self.titulo:
-            return f"O filme com o título '{self.titulo}' já existe."
 
         if resultado is None:
             with self.conectar() as conexao:
@@ -44,9 +46,12 @@ class FilmeRepository:
                 INSERT INTO filmes (titulo, duracao, ano, classificacao, genero, elenco, diretor, roteirista)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (filme.titulo, filme.duracao, filme.ano, filme.classificacao, filme.genero, filme.elenco, filme.diretor, filme.roteirista),
+                (filme.titulo, filme.duracao, filme.ano, filme.classificacao, filme.genero, elenco, diretor, roteirista),
                 )
+                conexao.commit()
             return "Adição de filme bem sucedida"
+
+        return f"O filme com o título '{filme.titulo}' já existe."
     
 
     def listar_filmes(self):
@@ -55,7 +60,6 @@ class FilmeRepository:
             cursor.execute(
                 "SELECT * FROM filmes"
             )
-            filmes = cursor.fetchall
+            filmes = cursor.fetchall()
 
-        for filme in filmes:
-            print(filme)
+        return [Filme(titulo=filme['titulo'], duracao=filme['duracao'], ano=filme['ano'], classificacao=filme['classificacao'], genero=filme['genero'], elenco=str(filme['elenco']).split(", "), diretor=str(filme['diretor']).split(", "), roteirista=str(filme['roteirista']).split(", ")) for filme in filmes]

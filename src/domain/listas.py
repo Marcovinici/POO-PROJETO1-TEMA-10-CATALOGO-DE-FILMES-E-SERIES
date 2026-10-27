@@ -1,23 +1,29 @@
-class Lista:
+class ListaPersonalizada:
     """Representa uma lista personalizada de mídias
 
     Esta classe organiza mídias selecionadas pelo usuário e permite
     criar a lista, adicionar mídias e removê-las.
 
     Attributes:
-    nome_da_lista (str): Representa o nome da lista
+    usuario (str): Guarda o usuário dono da lista
+    nome (str): Representa o nome da lista
+    id (int): Guarda o id da lista
     midias (list[Midia]): Lista contendo as mídias adicionadas
     """
-    def __init__(self):
-        pass
+    def __init__(self, nome_da_lista, usuario, id = None):
+        self.nome = nome_da_lista
+        self.usuario = usuario
+        self.id = id
+        self.midias = []
 
-    def criar_lista(self):
-        pass
-    def adicionar_na_lista(self):
-        pass
-    def remover_da_lista(self):
-        pass
+    def adicionar_na_lista(self, nova_midia):
+        if nova_midia.titulo not in self.midias:
+            self.midias.append(nova_midia)
+            return f"{nova_midia.titulo} adicionado com sucesso a {self.nome}"
+        else:
+            raise ValueError("A mídia já pertence a lista")
+        
 
-
-class ListaPersonalizada(Lista):
-    pass
+    def remover_da_lista(self, midia):
+        if midia.titulo not in self.midias:
+            raise ValueError(f"A mídia de título {midia.titulo} não pertence a lista {self.nome}")

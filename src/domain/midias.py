@@ -8,7 +8,6 @@ class Midia:
     Attributes:
     titulo (str): Representa o titulo da mídia
     ano (int): Representa a data de lançamento da mídia
-    duracao (int): Representa a duração do conteúdo
     classificacao (str): Representa a classificação de idade recomendada para os indivíduos que conumiram a mídia
     genero (str): Representa o gênero da mídia
     elenco (list[str]): Lista que contém os nomes(strings) que fazem  parte do elenco da mídia
@@ -17,10 +16,9 @@ class Midia:
     avaliacoes (list[Avaliacao]): Lista contendo todas as avaliações da mídia
     nota_media (int): Média das notas presentes nas avaliacoes
     """
-    def __init__(self, titulo: str, duracao: int, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None):
+    def __init__(self, titulo: str, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None):
         self.titulo = titulo
         self.genero = genero
-        self.duracao = duracao
         self.ano = ano
         self.classificacao = classificacao
         self.avaliacoes = []
@@ -58,17 +56,7 @@ class Midia:
             self._titulo = novo_titulo
         else:
             raise ValueError("O titulo não poder estar vazio ou ser apenas espaços em branco")
-
-    @property
-    def duracao(self):
-        return self._duracao
-    @duracao.setter
-    def duracao(self, nova_duracao):
-        if nova_duracao > 0:
-            self._duracao = nova_duracao
-        else:
-            raise ValueError("A duracao não pode ser igual o menor a 0")
-
+    
     @property
     def ano(self):
         return self._ano
@@ -110,11 +98,24 @@ class Filme(Midia):
 
     Esta classe herda de Midia e representa as mídias do tipo filme
 
+    Attributes
+    duracao(int): Representa a duração do conteúdo
     """
     def __init__ (self, titulo: str, duracao: int, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None):
-        
-        super().__init__(titulo, duracao, ano, classificacao, genero, elenco, diretor, roteirista)
+
+        self.duracao = duracao
+        super().__init__(titulo, ano, classificacao, genero, elenco, diretor, roteirista)
         self.avaliacoes = []
+
+    @property
+    def duracao(self):
+        return self._duracao
+    @duracao.setter
+    def duracao(self, nova_duracao):
+        if nova_duracao > 0:
+            self._duracao = nova_duracao
+        else:
+            raise ValueError("A duracao não pode ser igual o menor a 0")
 
     def __repr__(self):
         return f"Filme(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, nota = {self.nota})"
@@ -134,9 +135,9 @@ class Serie(Midia):
     total_episodios (int): Representa o número total de episódios da série
     avaliacoes (list[Avaliacao]): Lista contendo as avaliações da série
     """
-    def __init__(self, titulo: str, duracao: int, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None, temporadas: list["Temporada"] = None):
+    def __init__(self, titulo: str, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None, temporadas: list["Temporada"] = None):
         
-        super().__init__(titulo, duracao, ano, classificacao, genero, elenco, diretor, roteirista)
+        super().__init__(titulo, ano, classificacao, genero, elenco, diretor, roteirista)
         self.avaliacoes = []
         self.temporadas = temporadas
         self.nota_serie = None
@@ -271,16 +272,28 @@ class Episodio(Midia):
     Esta classe herda de Midia e possui atributos e métodos próprios de episódios. Um objeto dessa classe depende da existência de uma temporada
     
     Attributes:
+    duracao (int): Representa a duração do conteúdo
     numero (int): Representa o número do episódio
     avaliacoes (list[Avaliacao]): Lista contendo as avaliações do episódio
     """
     def __init__(self, titulo: str, duracao: int, ano: int, classificacao: str, numero: int, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None):
         
-        super().__init__(titulo, duracao, ano, classificacao, genero, elenco, diretor, roteirista)
+        super().__init__(titulo, ano, classificacao, genero, elenco, diretor, roteirista)
 
+        self.duracao = duracao
         self.numero = numero
         self._nota = None
         self.avaliacoes = []
+
+    @property
+    def duracao(self):
+        return self._duracao
+    @duracao.setter
+    def duracao(self, nova_duracao):
+        if nova_duracao > 0:
+            self._duracao = nova_duracao
+        else:
+            raise ValueError("A duracao não pode ser igual o menor a 0")
 
     @property
     def numero(self):
