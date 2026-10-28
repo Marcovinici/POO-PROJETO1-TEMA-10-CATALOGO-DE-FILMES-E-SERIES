@@ -134,26 +134,31 @@ def listar_listas(args):
 def adicionar_filme_na_lista(args):
     usuario = sessao.obter_usuario_logado()
     if usuario:
-        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista)
-        repo_listas.adicionar_filme_na_lista(id_lista, args.titulo)
+        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista, usuario.nome_de_usuario)
+        repo_listas.adicionar_filme_na_lista(id_lista, args.nome_do_filme)
     else:
         print("Não há usuário logado")
 
 def adicionar_serie_na_lista(args):
     usuario = sessao.obter_usuario_logado()
     if usuario:
-        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista)
-        repo_listas.adicionar_serie_na_lista(id_lista, args.titulo)
+        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista, usuario.nome_de_usuario)
+        repo_listas.adicionar_serie_na_lista(id_lista, args.nome_da_serie)
     else:
         print("Não há usuário logado") 
 
 def mostrar_lista(args):
     usuario = sessao.obter_usuario_logado()
     if usuario:
-        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista)
-        repo_listas.obter_lista_com_midias(id_lista)
+        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista, usuario.nome_de_usuario)
+        lista = repo_listas.obter_lista_com_midias(id_lista)
+        print("MÍDIAS PRESENTES NA LISTA")
+        print("-"*30)
+        for midia in lista.midias:
+            print(midia.titulo)
     else:
         print("Não há usuário logado") 
+
 
 # ----> FUNÇÕES DE ADMIN
 def listar_usuarios(args):
@@ -173,7 +178,7 @@ def listar_usuarios(args):
 # -------------------------------------MAIN---------------------------------------
 def main():
     parser = argparse.ArgumentParser(
-    prog= "Catalogo de Midias CLI",
+    prog= "pipocli",
     description= "Programa para manipular e gerenciar um catálogo de filmes e séries"
     )
 
@@ -284,12 +289,56 @@ def main():
     )
 
     listcmd_series.set_defaults(func=listar_series)
-
+    # listar listas
     listcmd_listas = subparsers_listar.add_parser(
         "listas", help="Utilizando o subcomando listas em listar, o programa imprimirá todas as listas do catálogo"
     )
 
     listcmd_listas.set_defaults(func=listar_listas)
+
+    # -> Comando de listas
+    # Subcomando principal
+    cmd_lista = subparsers.add_parser(
+        "lista", help="Gerencia as listas personalizadas"
+    )
+
+    cmd_lista.add_argument("nome_da_lista", type=str, help="Nome da lista")
+
+    subparsers_lista = cmd_lista.add_subparsers(
+        dest="subcomando_lista", required=True
+    )
+    # lista adicionar
+    listacmd_adicionar = subparsers_lista.add_parser(
+        "adicionar", help="Adiciona uma mídia à lista"
+    )
+
+    subparsers_lista_adicionar = listacmd_adicionar.add_subparsers(
+        dest="subcomando_lista_adicionar", required=True
+    )
+    # lista adicionar filme
+    listacmd_adicionar_filme = subparsers_lista_adicionar.add_parser(
+        "filme", help="Adiciona um filme à lista"
+    )
+    listacmd_adicionar_filme.add_argument(
+        "nome_do_filme", type=str
+    )
+
+    listacmd_adicionar_filme.set_defaults(func=adicionar_filme_na_lista)
+    # lista adicionar serie
+    listacmd_adicionar_serie = subparsers_lista_adicionar.add_parser(
+        "serie", help="Adiciona uma série à lista"
+    )
+    listacmd_adicionar_serie.add_argument(
+        "nome_da_serie", type=str
+    )
+
+    listacmd_adicionar_serie.set_defaults(func=adicionar_serie_na_lista)
+    # lista mostrar
+    listacmd_mostrar = subparsers_lista.add_parser(
+        "mostrar", help="Imprimi as midias da lista"
+    )
+
+    listacmd_mostrar.set_defaults(func=mostrar_lista)
 
     # --> COMANDOS DE USUÁRIO ADMINISTRADOR
     cmd_listar_usuarios = subparsers.add_parser(

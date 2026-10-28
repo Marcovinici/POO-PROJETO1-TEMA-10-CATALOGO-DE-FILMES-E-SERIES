@@ -48,7 +48,24 @@ cursor.execute(
     "DROP TABLE IF EXISTS filmes"
 )
 '''
-cursor.execute("DROP TABLE serie;")
+cursor.executescript("""
+DROP TABLE IF EXISTS lista_midia;
+
+CREATE TABLE lista_midia (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    lista_id INTEGER NOT NULL,
+    filme_titulo TEXT,
+    serie_titulo TEXT,
+    FOREIGN KEY (lista_id) REFERENCES listas(id) ON DELETE CASCADE,
+    FOREIGN KEY (filme_titulo) REFERENCES filmes(titulo) ON DELETE CASCADE,
+    FOREIGN KEY (serie_titulo) REFERENCES series(titulo) ON DELETE CASCADE,
+    CHECK (
+        (filme_titulo IS NOT NULL AND serie_titulo IS NULL) OR
+        (filme_titulo IS NULL AND serie_titulo IS NOT NULL)
+    ),
+    UNIQUE(lista_id, filme_titulo, serie_titulo)
+);
+""")
 conexao.commit()
 cursor.close()
 conexao.close()

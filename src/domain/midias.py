@@ -118,7 +118,7 @@ class Filme(Midia):
             raise ValueError("A duracao não pode ser igual o menor a 0")
 
     def __repr__(self):
-        return f"Filme(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, nota = {self.nota})"
+        return f"Filme(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, nota = {self.nota_media})"
 
 
 
@@ -160,14 +160,9 @@ class Serie(Midia):
     @property
     def total_temporadas(self):
         return len(self.temporadas)
-
-    @property
-    def total_episodios(self):
-        return sum(temporada.total_episodios for temporada in self.temporadas)
-
             
     def __repr__(self):
-        return f"Serie(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, temporadas = {self.temporadas}, nota = {self.nota_serie}, total_temporadas = {self.total_temporadas}, total_episodios = {self.total_episodios})"
+        return f"Serie(titulo = {self.titulo}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, temporadas = {self.temporadas}, nota = {self.nota_serie}, total_temporadas = {self.total_temporadas}, total_episodios = {self.total_episodios})"
 
     def ver_temporadas(self):
         return self.temporadas
@@ -306,5 +301,5 @@ class Episodio(Midia):
             raise ValueError("O atributo 'numero' deve ser um número maior que 0")
  
     def __repr__(self):
-        return f"Episodio(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, numero = {self.numero}, nota = {self.nota})"
+        return f"Episodio(titulo = {self.titulo}, duracao = {self.duracao}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, numero = {self.numero}, nota = {self.nota_media})"
     

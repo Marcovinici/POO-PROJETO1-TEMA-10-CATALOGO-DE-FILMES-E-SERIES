@@ -163,7 +163,7 @@ class ListasRepository:
 
             lista_obj = ListaPersonalizada(
                 nome_da_lista=row_lista["nome"],
-                usuario_id=row_lista["usuario_id"],
+                usuario=row_lista["usuario_id"],
                 id=row_lista["id"],
             )
 
