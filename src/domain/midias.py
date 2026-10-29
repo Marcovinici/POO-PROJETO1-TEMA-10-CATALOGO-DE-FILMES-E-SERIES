@@ -130,15 +130,13 @@ class Serie(Midia):
 
     Attributes:
     temporadas (list[Temporada]): Lista contendo as temporadas da série
-    nota_media_temoparadas (float): Representa média das notas de cada temporada
+    nota_media_temparadas (float): Representa média das notas de cada temporada
     total_temporadas (int): Representa o número total de temporadas da série
     total_episodios (int): Representa o número total de episódios da série
-    avaliacoes (list[Avaliacao]): Lista contendo as avaliações da série
     """
     def __init__(self, titulo: str, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None, temporadas: list["Temporada"] = None):
         
         super().__init__(titulo, ano, classificacao, genero, elenco, diretor, roteirista)
-        self.avaliacoes = []
         self.temporadas = temporadas
         self.nota_serie = None
 

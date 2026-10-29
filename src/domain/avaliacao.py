@@ -9,6 +9,7 @@ class Avaliacao:
     nota (float): Representa a nota atribuída pelo usuário
     """
     def __init__(self, tipo, usuario, nota, comentario = None):
+        self.tipo = tipo
         self.usuario = usuario
         self.nota = nota
         self.comentario = comentario
@@ -38,6 +39,8 @@ class Avaliacao:
         return self._comentario
     @comentario.setter
     def comentario(self, novo_comentario):
+        if novo_comentario is None:
+            self._comentario = None
         if len(novo_comentario) > 0 and len(novo_comentario) > novo_comentario.count(" "):
             self._comentario = novo_comentario
         else:
