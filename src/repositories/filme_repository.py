@@ -1,5 +1,6 @@
 from pathlib import Path
 import sqlite3
+import json
 from domain.midias import Filme
 
 class FilmeRepository:
@@ -10,33 +11,36 @@ class FilmeRepository:
     def conectar(self):
         conexao = sqlite3.connect(self.caminho)
         conexao.row_factory = sqlite3.Row
+        conexao.execute("PRAGMA foreign_keys = ON;")
         return conexao
 
     def criar_tabela(self):
         with self.conectar() as conexao:
             conexao.execute("""
             CREATE TABLE IF NOT EXISTS filmes (
-                titulo TEXT NOT NULL PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                titulo TEXT NOT NULL,
                 duracao INT NOT NULL,
                 ano INTEGER NOT NULL,
                 classificacao TEXT NOT NULL,
                 genero TEXT,
                 elenco TEXT,
                 diretor TEXT,
-                roteirista TEXT
+                roteirista TEXT,
+                UNIQUE(titulo, ano)
                 )
             """)
 
     def adicionar_filme(self, filme: Filme):
-        elenco = ", ".join(filme.elenco) if isinstance(filme.elenco, list) else filme.elenco or ""
-        diretor = ", ".join(filme.diretor) if isinstance(filme.diretor, list) else filme.diretor or ""
-        roteirista = ", ".join(filme.roteirista) if isinstance(filme.roteirista, list) else filme.roteirista or ""
+        elenco = json.dumps(filme.elenco or [], ensure_ascii=False)
+        diretor = json.dumps(filme.diretor or [], ensure_ascii=False)
+        roteirista = json.dumps(filme.roteirista or [], ensure_ascii=False)
 
         with self.conectar() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
-            "SELECT titulo FROM filmes WHERE titulo == ?",
-            (filme.titulo,)
+            "SELECT id FROM filmes WHERE titulo = ? AND ano = ?",
+            (filme.titulo, filme.ano),
             )
             resultado = cursor.fetchone()
 
@@ -51,15 +55,27 @@ class FilmeRepository:
                 conexao.commit()
             return "Adição de filme bem sucedida"
 
-        return f"O filme com o título '{filme.titulo}' já existe."
+        return f"O filme com o título '{filme.titulo}' do ano {filme.ano} já existe."
     
 
     def listar_filmes(self):
         with self.conectar() as conexao:
             cursor = conexao.cursor()
-            cursor.execute(
-                "SELECT * FROM filmes"
-            )
+            cursor.execute("SELECT * FROM filmes")
             filmes = cursor.fetchall()
 
-        return [Filme(titulo=filme['titulo'], duracao=filme['duracao'], ano=filme['ano'], classificacao=filme['classificacao'], genero=filme['genero'], elenco=str(filme['elenco']).split(", "), diretor=str(filme['diretor']).split(", "), roteirista=str(filme['roteirista']).split(", ")) for filme in filmes]
+        return [
+            Filme(
+                titulo=filme["titulo"],
+                duracao=filme["duracao"],
+                ano=filme["ano"],
+                classificacao=filme["classificacao"],
+                genero=filme["genero"],
+                elenco=json.loads(filme["elenco"]) if filme["elenco"] else [],
+                diretor=json.loads(filme["diretor"]) if filme["diretor"] else [],
+                roteirista=json.loads(filme["roteirista"])
+                if filme["roteirista"]
+                else [],
+            )
+            for filme in filmes
+        ]

@@ -11,7 +11,7 @@ class Avaliacao:
     comentario (str): Representa o comentário escrito pelo usuário
     nota (float): Representa a nota atribuída pelo usuário
     """
-    def __init__(self, tipo, usuario, nota, comentario = None):
+    def __init__(self, tipo: str, usuario: str, nota: float, comentario = None):
         self.tipo = tipo
         self.usuario = usuario
         self.nota = nota
@@ -34,7 +34,7 @@ class Avaliacao:
         return self._nota
     @nota.setter
     def nota(self, nova_nota):
-        if 0 <= nova_nota <= 10 and isinstance(nova_nota, int) and not isinstance(nova_nota, bool): # Verifica se o argumento de nota é um inetiro entre de 0 a 10
+        if 0 <= nova_nota <= 10 and isinstance(nova_nota, float) and not isinstance(nova_nota, bool): # Verifica se o argumento de nota é um inetiro entre de 0 a 10
             self._nota = nova_nota
         else:
             raise DadosInvalidosError("A nota presente na avaliação deve ser um inteiro de 0 a 10")
@@ -56,8 +56,8 @@ class Avaliacao:
             raise DadosInvalidosError("O novo comentário deve ser do tipo 'str'")
 
         
-    def alterar_nota(self, nova_nota):
+    def alterar_nota(self, nova_nota: float):
         self.nota = nova_nota
 
-    def alterar_comentario(self, novo_comentario):
+    def alterar_comentario(self, novo_comentario: str):
         self.comentario = novo_comentario

@@ -135,6 +135,8 @@ class Episodio(AvaliavelMixin, Midia):
 
         self.duracao = duracao
         self.numero = numero
+        self.temporada = None
+        self.serie = None
 
     # Getter e validação de duracao
     @property
@@ -199,15 +201,20 @@ class Temporada(AvaliavelMixin):
         return self._episodios
     @episodios.setter
     def episodios(self, episodios):
-        if episodios is None: # Se episodios é None, deixa episodios como uma lista vazia
-            self._episodios = []
-        elif isinstance(episodios, list): # Se for uma lista, checa se todos os elemntos são instâncias de Episodio
-            if all(isinstance(item, Episodio) for item in episodios):
-                self._episodios = episodios
-            else:
-                raise DadosInvalidosError("Todos os items da lista 'episodios' devem ser objetos da classe Episodio")
-        else:
-            raise DadosInvalidosError("O atributo 'episodios' deve ser uma lista")
+        # Validação: Não pode ser None, nem lista vazia
+        if not episodios or not isinstance(episodios, list):
+            raise DadosInvalidosError(
+                "Uma temporada deve conter ao menos um episódio (a lista não pode ser vazia)."
+            )
+
+        if not all(isinstance(item, Episodio) for item in episodios):
+            raise DadosInvalidosError(
+                "Todos os itens da lista 'episodios' devem ser objetos da classe Episodio."
+            )
+
+        self._episodios = episodios
+        for ep in self._episodios:
+            ep.temporada = self
 
     # Getter do total de episódios
     @property
@@ -249,15 +256,21 @@ class Serie(AvaliavelMixin, Midia):
         return self._temporadas
     @temporadas.setter
     def temporadas(self, temporadas):
-        if temporadas is None: # Se o argumento de temporadas é None, temporadas receberá uma lista vazia
-            self._temporadas = []
-        elif isinstance(temporadas, list): # Se o argumento de temporadas é uma lista e seus elemtos são instâncias de Temporada, temporadas receberá essa lista
-            if all(isinstance(item, Temporada) for item in temporadas):
-                self._temporadas = temporadas
-            else:
-                raise DadosInvalidosError("Todos os items presentes na lista de 'temporadas' devem ser objetos da classe Temporada")
-        else:
-            raise DadosInvalidosError("O atributo 'temporadas' deve ser uma lista de objetos Temporada")
+        # Validação: Não pode ser None, nem lista vazia
+        if not temporadas or not isinstance(temporadas, list):
+            raise DadosInvalidosError(
+                "Uma série deve conter ao menos uma temporada (a lista não pode ser vazia)."
+            )
+
+        if not all(isinstance(item, Temporada) for item in temporadas):
+            raise DadosInvalidosError(
+                "Todos os itens da lista 'temporadas' devem ser objetos da classe Temporada."
+            )
+
+        self._temporadas = temporadas
+        for temp in self._temporadas:
+            for ep in temp.episodios:
+                ep.serie = self
 
     # Getter do total de temporadas
     @property
@@ -268,6 +281,54 @@ class Serie(AvaliavelMixin, Midia):
     @property
     def total_episodios(self):
         return sum(temporada.total_episodios for temporada in self.temporadas)
+
+    @classmethod
+    def criar_serie_com_episodio_inicial(
+        cls,
+        titulo_serie: str,
+        ano: int,
+        classificacao: str,
+        titulo_episodio: str,
+        duracao_episodio: int,
+        genero: str = None,
+        elenco: list[str] = None,
+        diretor: list[str] = None,
+        roteirista: list[str] = None,
+        numero_temporada: int = 1,
+        numero_episodio: int = 1,
+    ) -> "Serie":
+        """Cria uma instância válida de Serie contendo sua 1ª Temporada e 1º Episódio."""
+
+        # 1. Instancia o episódio inicial
+        primeiro_ep = Episodio(
+            titulo=titulo_episodio,
+            duracao=duracao_episodio,
+            ano=ano,
+            classificacao=classificacao,
+            numero=numero_episodio,
+            genero=genero,
+            elenco=elenco,
+            diretor=diretor,
+            roteirista=roteirista,
+        )
+
+        # 2. Instancia a temporada inicial com o episódio
+        primeira_temp = Temporada(
+            numero=numero_temporada,
+            episodios=[primeiro_ep]
+        )
+
+        # 3. Retorna a Série completa
+        return cls(
+            titulo=titulo_serie,
+            ano=ano,
+            classificacao=classificacao,
+            genero=genero,
+            elenco=elenco,
+            diretor=diretor,
+            roteirista=roteirista,
+            temporadas=[primeira_temp],
+        )
             
     def __repr__(self):
         return f"Serie(titulo = {self.titulo}, ano = {self.ano},\nclassificacao = {self.classificacao}, genero = {self.genero}, elenco = {self.elenco},\ndiretor = {self.diretor}, roteirista = {self.roteirista}, temporadas = {self.temporadas}, nota = {self.nota_media}, total_temporadas = {self.total_temporadas}, total_episodios = {self.total_episodios})"
