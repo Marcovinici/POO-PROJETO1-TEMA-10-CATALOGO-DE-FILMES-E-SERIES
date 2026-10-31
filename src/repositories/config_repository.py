@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 from domain.excecoes import DadosInvalidosError
 
-class Configuracoes:
+class ConfigRepository:
     """Representa as configurações pessoais do usuário
 
     Esta classe guarda os limites e preferências do catálogo e permite
