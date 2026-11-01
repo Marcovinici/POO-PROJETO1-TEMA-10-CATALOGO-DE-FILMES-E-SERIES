@@ -1,6 +1,7 @@
 from pathlib import Path
 import sqlite3
 import json
+from domain.excecoes import CatalogoError, ItemDuplicadoError
 from domain.midias import Filme
 
 class FilmeRepository:
@@ -11,7 +12,7 @@ class FilmeRepository:
     def conectar(self):
         conexao = sqlite3.connect(self.caminho)
         conexao.row_factory = sqlite3.Row
-        conexao.execute("PRAGMA foreign_keys = ON;")
+        conexao.execute("PRAGMA foreign_keys = ON;") # Faz com que se um elemento que é refenciado for apagado, o que o referencia é apagado também
         return conexao
 
     def criar_tabela(self):
@@ -31,7 +32,13 @@ class FilmeRepository:
                 )
             """)
 
-    def adicionar_filme(self, filme: Filme):
+    def adicionar_filme(self, filme: Filme) -> str:
+        """
+        Adiciona um filme no catálogo
+
+        Recebe uma instâcia de Filme e o adiciona no banco de dados
+        """
+        # Transforma os atributos que são listas em uma string json, o que torna possível guardá-las em formato texto no banco
         elenco = json.dumps(filme.elenco or [], ensure_ascii=False)
         diretor = json.dumps(filme.diretor or [], ensure_ascii=False)
         roteirista = json.dumps(filme.roteirista or [], ensure_ascii=False)
@@ -39,12 +46,12 @@ class FilmeRepository:
         with self.conectar() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
-            "SELECT id FROM filmes WHERE titulo = ? AND ano = ?",
+            "SELECT id FROM filmes WHERE titulo = ? AND ano = ?", # Verifica se o filme já existe no banco
             (filme.titulo, filme.ano),
             )
             resultado = cursor.fetchone()
 
-        if resultado is None:
+        if resultado is None: # Se o filme não for encontrado, ele é adicionado no banco
             with self.conectar() as conexao:
                 conexao.execute("""
                 INSERT INTO filmes (titulo, duracao, ano, classificacao, genero, elenco, diretor, roteirista)
@@ -55,10 +62,13 @@ class FilmeRepository:
                 conexao.commit()
             return "Adição de filme bem sucedida"
 
-        return f"O filme com o título '{filme.titulo}' do ano {filme.ano} já existe."
+        raise ItemDuplicadoError(f"O filme {filme.titulo} do ano {filme.ano} já existe no banco de dados")
     
 
-    def listar_filmes(self):
+    def listar_filmes(self) -> list[Filme]:
+        """
+        Lista todos os filmes presentes no banco
+        """
         with self.conectar() as conexao:
             cursor = conexao.cursor()
             cursor.execute("SELECT * FROM filmes")
@@ -71,6 +81,7 @@ class FilmeRepository:
                 ano=filme["ano"],
                 classificacao=filme["classificacao"],
                 genero=filme["genero"],
+                # elenco, diretor e roteirista voltam ao formato original
                 elenco=json.loads(filme["elenco"]) if filme["elenco"] else [],
                 diretor=json.loads(filme["diretor"]) if filme["diretor"] else [],
                 roteirista=json.loads(filme["roteirista"])
@@ -79,3 +90,40 @@ class FilmeRepository:
             )
             for filme in filmes
         ]
+
+    def buscar_filme_id(self, titulo: str, ano: int | None = None) -> int | None:
+        """
+        Recebe o título e um ano e devolve o id referente ao filme
+        """
+        with self.conectar() as conexao:
+            cursor = conexao.cursor()
+
+            if ano is None:
+                cursor.execute(
+                    "SELECT id FROM filmes WHERE titulo = ?",
+                    (titulo,),
+                )
+            else:
+                cursor.execute(
+                    "SELECT id FROM filmes WHERE titulo = ? AND ano = ?",
+                    (titulo, ano),
+                )
+
+            filme = cursor.fetchone()
+
+        return filme["id"] if filme else None
+
+    def remover_filme(self, id: int) -> str:
+        """
+        Deleta da tabela de filmes o filme com id passado
+        """
+        if id is None:
+            raise CatalogoError("id do filme foi passado como None para 'remover_filme()'")
+        else:
+            with self.conectar() as conexao:
+                conexao.execute(
+                    "DELETE FROM filmes WHERE id = ?",
+                    (id,),
+                )
+            return "Filme deletado com sucesso"
+

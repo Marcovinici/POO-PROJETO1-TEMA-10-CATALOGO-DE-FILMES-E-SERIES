@@ -73,7 +73,7 @@ class Midia():
         return self._classificacao
     @classificacao.setter
     def classificacao(self, nova_classificacao):
-        if nova_classificacao is not isinstance(nova_classificacao, str): # Verifica se nova_classificacao é str
+        if nova_classificacao is isinstance(nova_classificacao, str): # Verifica se nova_classificacao é str
             raise DadosInvalidosError("A classificacao deve ser do tipo 'str'")
         if nova_classificacao.upper() in ["LIVRE", "+6", "+10", "+12", "+16", "+18"]: # Verifica se nova_classificacao é um dos itens (válidos) da lista
             self._classificacao = nova_classificacao.upper()
