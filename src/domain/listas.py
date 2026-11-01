@@ -17,11 +17,11 @@ class ListaPersonalizada:
         self.midias = []
 
     def adicionar_na_lista(self, nova_midia):
-        if nova_midia.titulo not in self.midias:
-            self.midias.append(nova_midia)
-            return f"{nova_midia.titulo} adicionado com sucesso a {self.nome}"
-        else:
+        if any(midia.titulo == nova_midia.titulo for midia in self.midias):
             raise ValueError("A mídia já pertence a lista")
+
+        self.midias.append(nova_midia)
+        return f"{nova_midia.titulo} adicionado com sucesso a {self.nome}"
         
 
     def remover_da_lista(self, midia):

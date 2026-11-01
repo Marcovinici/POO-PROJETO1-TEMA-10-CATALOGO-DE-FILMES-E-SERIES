@@ -1,8 +1,9 @@
 import argparse
+from domain.excecoes import DadosInvalidosError, CatalogoError
 from repositories.sessao import Sessao
 from domain.usuario import Usuario
 from repositories.usuario_repository import UsuarioRepository
-from domain.midias import Filme, Serie
+from domain.midias import Filme, Serie, Temporada, Episodio
 from repositories.filme_repository import FilmeRepository
 from repositories.serie_repository import SerieRepository
 from domain.listas import ListaPersonalizada
@@ -23,6 +24,7 @@ def logar(args):
         print(f"O usuario {args.nome_de_usuario} foi logado com sucesso!")
     else:
         print("Nome de usuário ou senha inválidas")
+
     
 def cad_usuario(args):
     if args.admin :
@@ -30,6 +32,7 @@ def cad_usuario(args):
     else:
         novo_usuario = Usuario(args.nome_de_usuario, args.senha, args.nome)
     print(repo_usuario.cadastrar(novo_usuario))
+
 
 # ----> FUNÇOES DE USUÁRIO PADRAO
 def usuario(args):
@@ -39,12 +42,14 @@ def usuario(args):
     else:
         print("Nenhum usuário logado")
 
+
 def logout(args):
     usuario = sessao.obter_usuario_logado()
     if usuario:
         sessao.encerrar_sessao()
     else:
         print("Não há usuário logado")
+
 
 def adicionar_filme(args):
     usuario = sessao.obter_usuario_logado()
@@ -56,18 +61,19 @@ def adicionar_filme(args):
                 ano=args.ano, 
                 classificacao=args.classificacao, 
                 genero=args.genero, 
-                elenco=args.elenco, 
-                diretor=args.diretor, 
-                roteirista=args.roteirista
+                elenco=args.elenco or [], 
+                diretor=args.diretor or [], 
+                roteirista=args.roteirista or []
                 )
-        except:
-            filme = None
-            print("Erro ao criar objeto filme")
+        except (ValueError, DadosInvalidosError) as erro:
+            print(f"Erro ao adicionar a filme: {erro}")
+            return
 
         if filme:
             print(repo_filme.adicionar_filme(filme))
     else:
         print("Não há usuário logado")
+
 
 def listar_filmes(args):
     usuario = sessao.obter_usuario_logado()
@@ -80,27 +86,62 @@ def listar_filmes(args):
     else:
         print("Não há usuário logado")
 
+
 def adicionar_serie(args):
     usuario = sessao.obter_usuario_logado()
-    if usuario:
-        try:
-            serie = Serie(
-                titulo=args.titulo, 
-                ano=args.ano, 
-                classificacao=args.classificacao, 
-                genero=args.genero, 
-                elenco=args.elenco, 
-                diretor=args.diretor, 
-                roteirista=args.roteirista
-                )
-        except:
-            serie = None
-            print("Erro ao criar objeto serie")
 
-        if serie:
-            print(repo_serie.adicionar_serie(serie))
-    else:
+    if not usuario:
         print("Não há usuário logado")
+        return
+
+    try:
+        print("\nDados do primeiro episódio da primeira temporada")
+
+        titulo_episodio = input("Título do episódio: ").strip()
+        duracao_episodio = int(input("Duração do episódio: "))
+        ano_episodio = int(input("Ano do episódio: "))
+        numero_episodio = int(input("Número do episódio: "))
+
+        classificacao_episodio = input(
+            f"Classificação do episódio [{args.classificacao}]: "
+        ).strip()
+
+        if not classificacao_episodio:
+            classificacao_episodio = args.classificacao
+
+        episodio = Episodio(
+            titulo=titulo_episodio,
+            duracao=duracao_episodio,
+            ano=ano_episodio,
+            classificacao=classificacao_episodio,
+            numero=numero_episodio,
+            genero=args.genero,
+            elenco=args.elenco or [],
+            diretor=args.diretor or [],
+            roteirista=args.roteirista or [],
+        )
+
+        primeira_temporada = Temporada(
+            numero=1,
+            episodios=[episodio],
+        )
+
+        serie = Serie(
+            titulo=args.titulo,
+            ano=args.ano,
+            classificacao=args.classificacao,
+            genero=args.genero,
+            elenco=args.elenco or [],
+            diretor=args.diretor or [],
+            roteirista=args.roteirista or [],
+            temporadas=[primeira_temporada],
+        )
+
+        print(repo_serie.adicionar_serie(serie))
+
+    except (ValueError, DadosInvalidosError) as erro:
+        print(f"Erro ao criar série: {erro}")
+
 
 def listar_series(args):
     usuario = sessao.obter_usuario_logado()
@@ -113,12 +154,14 @@ def listar_series(args):
     else:
         print("Não há usuário logado")
 
+
 def adicionar_lista(args):
     usuario = sessao.obter_usuario_logado()
     if usuario:
         repo_listas.criar_lista(args.nome_da_lista, usuario.nome_de_usuario)
     else:
         print("Não há usuário logado")
+
 
 def listar_listas(args):
     usuario = sessao.obter_usuario_logado()
@@ -130,30 +173,52 @@ def listar_listas(args):
             print(lista.nome)
     else:
         print("Não há usuário logado")
+
     
 def adicionar_filme_na_lista(args):
     usuario = sessao.obter_usuario_logado()
     if usuario:
-        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista)
-        repo_listas.adicionar_filme_na_lista(id_lista, args.titulo)
+        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista, usuario.nome_de_usuario)
+        if id_lista is None:
+            print("Lista não encontrada")
+            return
+        id_filme = repo_filme.buscar_id_por_titulo(args.nome_do_filme)
+        if id_filme is None:
+            print("Filme não encontrado")
+            return
+        repo_listas.adicionar_filme_na_lista(id_lista, id_filme)
     else:
         print("Não há usuário logado")
+
 
 def adicionar_serie_na_lista(args):
     usuario = sessao.obter_usuario_logado()
     if usuario:
-        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista)
-        repo_listas.adicionar_serie_na_lista(id_lista, args.titulo)
+        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista, usuario.nome_de_usuario)
+        if id_lista is None:
+            print("Lista não encontrada")
+            return
+        id_serie = repo_serie.buscar_id_por_titulo(args.nome_da_serie)
+        if id_serie is None:
+            print("Serie não encontrada")
+            return
+        repo_listas.adicionar_serie_na_lista(id_lista, id_serie)
     else:
         print("Não há usuário logado") 
+
 
 def mostrar_lista(args):
     usuario = sessao.obter_usuario_logado()
     if usuario:
-        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista)
-        repo_listas.obter_lista_com_midias(id_lista)
+        id_lista = repo_listas.buscar_id_por_nome(args.nome_da_lista, usuario.nome_de_usuario)
+        lista = repo_listas.obter_lista_com_midias(id_lista)
+        print("MÍDIAS PRESENTES NA LISTA")
+        print("-"*30)
+        for midia in lista.midias:
+            print(midia.titulo)
     else:
         print("Não há usuário logado") 
+
 
 # ----> FUNÇÕES DE ADMIN
 def listar_usuarios(args):
@@ -173,7 +238,7 @@ def listar_usuarios(args):
 # -------------------------------------MAIN---------------------------------------
 def main():
     parser = argparse.ArgumentParser(
-    prog= "Catalogo de Midias CLI",
+    prog= "pipocli",
     description= "Programa para manipular e gerenciar um catálogo de filmes e séries"
     )
 
@@ -284,12 +349,56 @@ def main():
     )
 
     listcmd_series.set_defaults(func=listar_series)
-
+    # listar listas
     listcmd_listas = subparsers_listar.add_parser(
         "listas", help="Utilizando o subcomando listas em listar, o programa imprimirá todas as listas do catálogo"
     )
 
     listcmd_listas.set_defaults(func=listar_listas)
+
+    # -> Comando de listas
+    # Subcomando principal
+    cmd_lista = subparsers.add_parser(
+        "lista", help="Gerencia as listas personalizadas"
+    )
+
+    cmd_lista.add_argument("nome_da_lista", type=str, help="Nome da lista")
+
+    subparsers_lista = cmd_lista.add_subparsers(
+        dest="subcomando_lista", required=True
+    )
+    # lista adicionar
+    listacmd_adicionar = subparsers_lista.add_parser(
+        "adicionar", help="Adiciona uma mídia à lista"
+    )
+
+    subparsers_lista_adicionar = listacmd_adicionar.add_subparsers(
+        dest="subcomando_lista_adicionar", required=True
+    )
+    # lista adicionar filme
+    listacmd_adicionar_filme = subparsers_lista_adicionar.add_parser(
+        "filme", help="Adiciona um filme à lista"
+    )
+    listacmd_adicionar_filme.add_argument(
+        "nome_do_filme", type=str
+    )
+
+    listacmd_adicionar_filme.set_defaults(func=adicionar_filme_na_lista)
+    # lista adicionar serie
+    listacmd_adicionar_serie = subparsers_lista_adicionar.add_parser(
+        "serie", help="Adiciona uma série à lista"
+    )
+    listacmd_adicionar_serie.add_argument(
+        "nome_da_serie", type=str
+    )
+
+    listacmd_adicionar_serie.set_defaults(func=adicionar_serie_na_lista)
+    # lista mostrar
+    listacmd_mostrar = subparsers_lista.add_parser(
+        "mostrar", help="Imprimi as midias da lista"
+    )
+
+    listacmd_mostrar.set_defaults(func=mostrar_lista)
 
     # --> COMANDOS DE USUÁRIO ADMINISTRADOR
     cmd_listar_usuarios = subparsers.add_parser(
