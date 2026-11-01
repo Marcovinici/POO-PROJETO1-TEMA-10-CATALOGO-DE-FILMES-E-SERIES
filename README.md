@@ -59,7 +59,8 @@ classDiagram
         +str nome
         +str nome_de_usuario
         +str senha
-        +mudar_nome_de_usuario()
+        +str tipo
+        +Historico historico
         +mudar_senha()
     }
 
@@ -74,12 +75,8 @@ classDiagram
         +List~str~elenco
         +List~str~diretor
         +List~str~roteirista
-        +List~Avaliacao~avaliacoes
-        +int nota_media
         %%---Métodos---
         +exibir_detalhes()
-        +avaliar()
-        +ver_avaliacoes()
     }
 
 
@@ -88,47 +85,48 @@ classDiagram
         +str nome
         +str usuario
         +List~Midia~midias
+        +adicionar_na_lista()
+        +remover_da_lista()
     }
 
 
     class Relatorio {
+        +List~Filme~filmes
+        +List~Serir~series
+        +Historico historico
+        +tempo_total_assistido()
         +media_de_notas_por_genero()
-        +tempo_total_assistido_por_tipo()
-        +top10_bem_avaliados()
-        +series_mais_assistidas_por_ep()
-
+        +top_10()
+        +series_com_mais_eps()
     }
 
     %% Status por Usuário e Histórico
 
     class MidiaAssistida {
         +Midia midia
-        +str data_ultima_visualizacacao
+        +int usuario_id
+        +str data_assistido
+
     }
 
     class Historico {
-        +List~MidiaAssistida~midias_assistidas
-        +adicionar_visualizacao()
+        +List~MidiaAssistida~registros
+        +int usuario_id
+        +registrar_conclusao()
+        +soma_tempo_no_periodo()
+        +gerar_relatorio()
         +mostrar_relatorio()
 
     }
-
-    class Configuracoes {
-        +float nota_minima_de_recomendados
-        +int limite_de_listas_personalizadas
-        +str metrica_duracao
-        +cria_json_settings()
-        +conversor_de_duracao()
-        +mudar_nota_minima_de_recomendados()
-        +mudar_limite_de_listas_recomendadas()
-    }
-
 
 
     %% Heranças de Midia 
     class Filme {
         +int duracao
         +float nota
+        +List~Avaliacao~avaliacoes
+        +float nota_media
+        + avaliar()
     }
 
     class Serie {
@@ -137,7 +135,9 @@ classDiagram
         +float nota_media_temporadas
         +int total_temporadas
         +int total_episodios
+        +List~Avaliacao~avaliacoes
         +ver_temporadas()
+        +avaliar()
     }
 
     %% Serie Subclasses
@@ -149,15 +149,15 @@ classDiagram
         +float nota_temporada
         +List~Avaliacao~avaliacoes
         +mostrar_episodios()
-        +media_avaliacao_episodios()
-        +avaliar_temporada()
-        +ver_avaliacoes()
+        +avaliar()
     }
 
     class Episodio {
         +int duracao
         +int numero
         +float nota_media
+        +List~Avaliacao~ avaliacoes
+        +avaliar()
     }
 
 
@@ -191,6 +191,6 @@ classDiagram
     Historico "1" *-- "many" MidiaAssistida : contem
     MidiaAssistida "many" --> "1" Midia : refere-se
 
-    Usuario "1" *-- "1" Configuracoes : contem
     Usuario "1" *-- "1" Historico : contem
+    Relatorio "1" *-- "1" Historico : contem
 ```

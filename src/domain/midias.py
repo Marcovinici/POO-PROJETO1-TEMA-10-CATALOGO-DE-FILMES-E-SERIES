@@ -95,6 +95,8 @@ class Filme(AvaliavelMixin, Midia):
 
     Attributes
     duracao(int): Representa a duração do conteúdo
+    nota_media(float): Médias das notas presentes na lista de avaliações
+    avaliacoes(list[Avaliacao]): Lista contendo avaliações do filme
     """
     def __init__ (self, titulo: str, duracao: int, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None):
 
@@ -244,6 +246,7 @@ class Serie(AvaliavelMixin, Midia):
     nota_media_temparadas (float): Representa média das notas de cada temporada --> AvaliavelMixin
     total_temporadas (int): Representa o número total de temporadas da série
     total_episodios (int): Representa o número total de episódios da série
+    avaliacoes (list[Avaliacao]): Lista contendo as avaliações da série
     """
     def __init__(self, titulo: str, ano: int, classificacao: str, genero: str = None, elenco: list[str] = None, diretor: list[str] = None, roteirista: list[str] = None, temporadas: list["Temporada"] = None):
         

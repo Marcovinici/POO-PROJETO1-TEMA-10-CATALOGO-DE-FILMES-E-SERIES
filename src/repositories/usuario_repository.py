@@ -1,6 +1,7 @@
 from pathlib import Path
 import sqlite3
 from domain.usuario import Usuario
+from domain.excecoes import CatalogoError
 
 class UsuarioRepository:
     def __init__(self, caminho):
@@ -72,6 +73,35 @@ class UsuarioRepository:
             )
 
         return "Cadastro bem sucedido"
+
+    def alterar_senha(self, usuario: Usuario, nova_senha: str) -> str:
+        """Altera a senha do usuário no domínio e no banco de dados."""
+        if not isinstance(usuario, Usuario):
+            raise CatalogoError("É necessário informar uma instância de Usuario.")
+
+        with self.conectar() as conexao:
+            cursor = conexao.execute(
+                """
+                SELECT 1 FROM usuarios
+                WHERE nome_de_usuario = ?
+                """,
+                (usuario.nome_de_usuario,),
+            )
+            if cursor.fetchone() is None:
+                return f"O usuário {usuario.nome_de_usuario} não existe no banco de dados"
+
+            # Se o usuário for encontrado sua senha é mudada
+            usuario.mudar_senha(nova_senha)
+            conexao.execute(
+                """
+                UPDATE usuarios
+                SET senha = ?
+                WHERE nome_de_usuario = ?
+                """,
+                (usuario.senha, usuario.nome_de_usuario),
+            )
+
+        return "Senha alterada com sucesso"
 
     def login(self, nome_de_usuario, senha):
         if self.existe_usuario(nome_de_usuario) and self.senha_verificada(nome_de_usuario, senha):

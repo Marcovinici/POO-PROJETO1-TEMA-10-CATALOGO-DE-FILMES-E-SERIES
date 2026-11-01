@@ -1,54 +1,95 @@
+from collections.abc import Iterable
+from typing import Any
+
+from domain.midias import Filme, Serie
+
+
 class Relatorio:
-    """Classe base para os relatórios do catálogo
-
-    Esta classe reúne os dados de identificação e as operações comuns
-    aos relatórios.
+    """
+    Constrói relatórios a partir do catálogo e do histórico de um usuário.
 
     Attributes:
-    nome_do_usuario (str): Representa o nome do usuário do relatório
-    nome_do_relatorio (str): Representa o nome do relatório
+    filmes (list[Filme]): Filmes do catálogo
+    series (list[Serie]): Séries do catálogo
+    historico (Historico): Histórico do usuário
     """
-    def __init__(self):
-       pass
 
-    def criar_relatorio(self):
-        pass
-    def atualizar_relatorio(self):
-        pass
-    def mostrar_relatorio(self):
-        pass
+    def __init__(self, filmes: Iterable[Filme] | Any = None, series: Iterable[Serie] | Any = None, historico: Any = None):
+        # Iterable é usado para mostrar que o argumento é um interável, independente do seu tipo(lista, tuplas, dicionário)
+        # Caso for passado um FilmeRepository e/ou um SerieRepository, a partir de 'obter_itens', fazendo uso de um método interno dos repositories, também é extraído todas as mídias
+        self.filmes = self._obter_itens(filmes, "listar_filmes")
+        self.series = self._obter_itens(series, "listar_series")
+        self.historico = historico
 
+    @staticmethod
+    def _obter_itens(origem: Iterable[Any] | Any, metodo: str) -> list[Any]:
+        """
+        Obtem midias a partir de um iterável ou de um repository de mídia
+        """
+        if origem is None:
+            return []
+        # Se for repository, a partir de um método interno (listar_filmes() para FilmeRepository e lista_series() para SerieRepository) as mídias são capturadas
+        if hasattr(origem, metodo): 
+            origem = getattr(origem, metodo)()
+        return list(origem)
 
+    def tempo_total_assistido(self) -> int:
+        """Retorna o tempo total de todas as mídias do histórico, em minutos."""
+        if self.historico is None:
+            return 0
 
-class RelatorioGeral(Relatorio):
-    """Representa o relatório geral de consumo do usuário
+        registros = getattr(self.historico, "registros", None) # Captura os registros do hstórico
+        if registros is None:
+            registros = getattr(self.historico, "_registros", [])
 
-    Esta classe herda de Relatorio e reúne estatísticas e seleções
-    relacionadas às mídias do catálogo.
+        return sum(registro.midia.duracao for registro in registros) # Retorna a soma da duração de cada mídia
 
-    Attributes:
-    media_notas_por_genero (float): Representa a média das notas por gênero
-    tempo_total_assistido (float): Representa o tempo total de consumo de mídias
-    top10_bem_avaliados (list): Lista das dez mídias mais bem avaliadas
-    series_mais_eps_assistidos (list): Lista contendo as séries com mais episódios assistidos
-    filmes_mais_assistidos (list): Lista contendo os filmes mais assistidos
-    series_mais_assistidas (list): Lista contendo as séries mais assistidas
-    """
-    def __init__(self):
-        pass
+    def media_de_notas_por_genero(self) -> dict[str, float]:
+        """Retorna a média das avaliações agrupada pelo gênero da mídia."""
+        notas_por_genero: dict[str, list[float]] = {}
 
+        # Desempacota os filmes e series (guardados nos atributos 'filmes' e 'series'), e os percorre guardando o gênero e a nota de cada um
+        for midia in [*self.filmes, *self.series]:
+            genero = getattr(midia, "genero", None)
+            nota = getattr(midia, "nota_media", None)
+            if genero and nota is not None:
+                # Cria a chave como o gênero se ainda não houver criado e adiciona a nota no dicionário
+                notas_por_genero.setdefault(genero, []).append(nota)
 
+        # É retorando um dicionário contendo os gêneros(key) com suas respectivas notas médias(value) 
+        return {
+            genero: round(sum(notas) / len(notas), 1)
+            for genero, notas in sorted(notas_por_genero.items())
+        }
 
-class RelatorioHistorico(Relatorio):
-    """Representa o relatório de consumo baseado no histórico
+    def top_10(self) -> list[dict[str, Any]]:
+        """Retorna as dez mídias com maior média de avaliações."""
+        # Desempacota os itens de séries e filmes e os guarda em 'catalogo'
+        catalogo = [*self.filmes, *self.series]
 
-    Esta classe herda de Relatorio e organiza o tempo de consumo em
-    diferentes períodos.
+        # guarda todas as midias avaliadas em 'avaliadas'
+        avaliadas = [midia for midia in catalogo if getattr(midia, "nota_media", None) is not None]
 
-    Attributes:
-    tempo_total_dia (float): Representa o tempo total assistido no dia
-    tempo_total_semana (float): Representa o tempo total assistido na semana
-    tempo_total_mes (float): Representa o tempo total assistido no mês
-    """
-    def __init__(self):
-        pass
+        # Ordena as midias por nota média (midias com mesma nota são ordenadas em ordem alfabetica)
+        avaliadas.sort(key=lambda midia: (-midia.nota_media, midia.titulo.casefold()))
+
+        return [
+            {
+                "titulo": midia.titulo,
+                "tipo": "filme" if isinstance(midia, Filme) else "serie",
+                "nota_media": midia.nota_media,
+            }
+            for midia in avaliadas[:10]
+        ]
+
+    def series_com_mais_eps(self) -> list[dict[str, Any]]:
+        """Retorna as séries ordenadas pelo número total de episódios."""
+        # Ordena as series por numero de episódios em ordem decrescente (midias com mesmo numero de episodios são ordenadas em ordem alfabética)
+        series = sorted(self.series, key=lambda serie: (-serie.total_episodios, serie.titulo.casefold()))
+        return [
+            {
+                "titulo": serie.titulo,
+                "total_episodios": serie.total_episodios,
+            }
+            for serie in series
+        ]

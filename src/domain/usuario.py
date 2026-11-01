@@ -1,3 +1,6 @@
+from domain.historico import Historico
+
+
 class Usuario:
     """Representa o usuário do catálogo de mídias
 
@@ -9,12 +12,21 @@ class Usuario:
     nome (str): Representa o nome real do usuário
     senha (str): Representa a senha do usuário
     tipo(str): Representa o tipo de usuário (padrão ou adiministrador)
+    historico (Historico): Histórico de mídias concluídas pelo usuário
     """
-    def __init__(self, nome_de_usuario, senha, nome, tipo = "PADRAO"):
+    def __init__(
+        self,
+        nome_de_usuario,
+        senha,
+        nome,
+        tipo="PADRAO",
+        historico=None,
+    ):
         self.nome_de_usuario = nome_de_usuario
         self.senha = str(senha)
         self.nome = nome
         self.tipo = tipo
+        self.historico = historico or Historico(self.nome_de_usuario)
 
     @property
     def nome_de_usuario(self):
@@ -59,8 +71,5 @@ class Usuario:
     def __str__(self):
         return f"{self._nome_de_usuario}: {self.nome}"
     
-    def mudar_nome_de_usuario(self, novo_nome):
-        self.nome_de_usuario = novo_nome
-
     def mudar_senha(self, nova_senha):
         self.senha = str(nova_senha)
