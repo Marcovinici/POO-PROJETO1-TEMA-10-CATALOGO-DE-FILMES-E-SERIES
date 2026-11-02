@@ -51,6 +51,7 @@ POO-PROJETO1-TEMA-10-CATALOGO-DE-FILMES-E-SERIES/
     └── test_01.py
 ```
 
+
 ## Estrutura de Classes
 ```mermaid
 classDiagram
@@ -194,3 +195,88 @@ classDiagram
     Usuario "1" *-- "1" Historico : contem
     Relatorio "1" *-- "1" Historico : contem
 ```
+
+## Pipocli Comandos
+
+### Comandos globais
+
+
+| AÇÃO                                                                            | COMANDO                                         | DISPONÍVEL |
+| ------------------------------------------------------------------------------- | ----------------------------------------------- | ---------- |
+| Logar o usuário                                                                 | `pipocli logar <usuario> <senha>`               | SIM        |
+| Cadastrar um novo usuário (para cadastrar usuario administrador usa-se --admin) | `pipocli cad-usuario <usuario> <senha> --admin` | SIM        |
+
+
+### Comandos de Usuário
+
+| AÇÃO                            | COMANDO                       | DISPONÍVEL |
+| ------------------------------- | ----------------------------- | ---------- |
+| Checar qual usuário está logado | `pipocli usuario`             | SIM        |
+| Alterar senha                   | `pipocli usuario alter-senha <nova_senha>` | SIM |
+
+#### Manipulação de conteúdos
+
+| AÇÃO                                       | COMANDO                                                                                                                                                        | DISPONÍVEL |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| Listar todas as mídias do catálogo         | `pipocli listar midias`                                                                                                                                        | SIM |
+| Adicionar filme ao catálogo                | `pipocli adicionar filme` + todos os argumentos  necessários e `--gen <genero>`  ,  `--elen <elenco>`, `--dir <diretor>`, ` --rot <roteirista>` como opcionais | SIM        |
+| Listar todos os filmes disponíveis         | `pipocli listar filmes`                                                                                                                                        | SIM        |
+| Adicionar série ao catálogo                | `pipocli adicionar serie`+ todos os argumentos  necessários e `--gen <genero>`  ,  `--elen <elenco>`, `--dir <diretor>`, ` --rot <roteirista>` como opcionais  | SIM        |
+| Adicionar temporada a serie                | `pipocli adicionar temporada <serie> <ano> <numero> <titulo_ep> <duracao_ep> <ano_ep> <numero_ep> <classificacao>` | SIM |
+| Adicionar episódio a temporada             | `pipocli adicionar episodio <serie> <ano> <temporada> <numero> <titulo> <duracao> <ano_ep> <classificacao>` | SIM |
+| Listar temporadas de uma serie             | `pipocli listar temporadas <serie> [--ano ANO]` | SIM |
+| Listar episódios de uma temporada          | `pipocli listar episodios <serie> <temporada> [--ano ANO]` | SIM |
+| Listar todas as séries disponíveis         | `pipocli listar series`                                                                                                                                        | SIM        |
+| Ver determinada lista de mídias disponível | `pipocli lista mostrar <nome_da_lista>`                                                                                                                        | SIM        |
+| Ver listas de mídias disponíveis           | `pipocli listar listas`                                                                                                                                        | SIM        |
+| Adicionar nova lista ao catálogo           | `pipocli adicionar lista`                                                                                                                                      | SIM        |
+| Adicionar nova mídia a lista               | `pipocli lista <nome_da_lista> adicionar filme <nome_do_filme>` ou `pipocli lista <nome_da_lista> adicionar serie <nome_da_serie>`                             | SIM        |
+| Ver lista de Recomendados                  | `pipocli recomendados` | SIM |
+| Remover filme de uma lista                 | `pipocli lista <nome> remover-filme <filme>` | SIM |
+| Remover série de uma lista                 | `pipocli lista <nome> remover-serie <serie>` | SIM |
+| Remover filme do catálogo                  | `pipocli remover filme <titulo> [--ano ANO]` | SIM |
+| Remover série do catálogo                  | `pipocli remover serie <titulo> [--ano ANO]` | SIM |
+| Remover temporada de uma serie             | `pipocli remover temporada <serie> <temporada> [--ano ANO]` | SIM |
+| Remover episodio de uma temporada          | `pipocli remover episodio <serie> <temporada> <episodio> [--ano ANO]` | SIM |
+#### Visualização,  Avaliação, Histórico e Relatórios
+
+| AÇÃO                                                  | COMANDO | DISPONÍVEL |
+| ----------------------------------------------------- | ------- | ---------- |
+| Assistir filme                                        | `pipocli assistir filme <titulo> [--ano ANO]` | SIM |
+| Assistir episódio                                     | `pipocli assistir episodio <serie> <temporada> <episodio> [--ano ANO]` | SIM |
+| Ver informações da série                              | `pipocli info serie <serie> [--ano ANO]` | SIM |
+| Ver informações da temporada                          | `pipocli info temporada <serie> <temporada> [--ano ANO]` | SIM |
+| Ver informações do episódio                           | `pipocli info episodio <serie> <temporada> <episodio> [--ano ANO]` | SIM |
+| Ver informações do filme                              | `pipocli info filme <titulo> [--ano ANO]` | SIM |
+| Avaliar filme                                         | `pipocli avaliar filme <titulo> <nota> [--comentario TEXTO]` | SIM |
+| Avaliar episódio                                      | `pipocli avaliar episodio <serie> <temporada> <episodio> <nota> [--ano ANO]` | SIM |
+| Avaliar temporada                                     | `pipocli avaliar temporada <serie> <temporada> <nota> [--ano ANO]` | SIM |
+| Avaliar série                                         | `pipocli avaliar serie <serie> <nota> [--ano ANO]` | SIM |
+| Ver avaliações de filme                               | `pipocli avaliacoes filme <titulo> [--ano ANO]` | SIM |
+| Ver avaliações de episódio                            | `pipocli avaliacoes episodio <serie> <temporada> <episodio> [--ano ANO]` | SIM |
+| Ver avaliações de temporada                           | `pipocli avaliacoes temporada <serie> <temporada> [--ano ANO]` | SIM |
+| Ver avaliações de série                               | `pipocli avaliacoes serie <serie> [--ano ANO]` | SIM |
+| Listar filmes assistidos                              | `pipocli listar filmes-assistidos` | SIM |
+| Listar series assistidas e que estão sendo assistidas | `pipocli listar series-assistidas` | SIM |
+| Listar últimas mídias assistidas                      | `pipocli listar ultimas-assistidas [--limite N]` | SIM |
+| Relatório de média de notas por gênero                | `pipocli relatorio generos` | SIM |
+| Relatório de tempo total assistido                    | `pipocli relatorio tempo` | SIM |
+| Relatótio do Top10 filmes/series                      | `pipocli relatorio top10` | SIM |
+| Relatório de séries com maior número de episódios     | `pipocli relatorio series-episodios` | SIM |
+#### Configurações
+
+| AÇÃO                                                | COMANDO | DISPONÍVEL |
+| --------------------------------------------------- | ------- | ---------- |
+| Ver configurações atuais                            | `pipocli config ver` | SIM |
+| Alterar nota mínima para "recomendado"              | `pipocli config nota <valor>` | SIM |
+| Alterar limite de listas personalizadas por usuário | `pipocli config listas <valor>` | SIM |
+| Alterar métrica de duração                          | `pipocli config metrica horas\|minutos` | SIM |
+
+
+
+
+### Comandos de Administrador
+
+| AÇÃO                                 | COMANDO                   | DISPONÍVEL |
+| ------------------------------------ | ------------------------- | ---------- |
+| Listar todos os usuários do catálogo | `pipocli listar-usuarios` | SIM        |
