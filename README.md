@@ -1,13 +1,20 @@
 # PipoCLI 🍿
  Esse projeto faz parte da disciplina de Programação Orientada a Objetos (ES0008), feito para trabalhar os conhecimentos adquiridos ao longo da cadeira e nas disciplinas anteriores.
 
-## Descrição  do Projeto
+## Sumário
+- [Descrição do Projeto](#-descrição-do-projeto)
+- [Pré-Requisitos](#-pré-requisitos)
+- [Guia de Instalação](#-guia-de-instalação)
+- [Comandos Pipocli](#-comandos-pipocli)
+- [Estrutura de Pastas](#-estrutura-de-classes)
+- [Estrutura de Classes](#-estrutura-de-classes)
 
-Sistema de linha de comando (CLI) ou API mínima (FastAPI/Flask, opcional) para gerenciar um catálogo pessoal de filmes e séries, com avaliações, status de visualização, temporadas/episódios, histórico e relatórios de consumo de mídia.
+## Descrição do Projeto
 
-## Objetivos
+Sistema de linha de comando (CLI) para gerencia de um catálogo pessoal de filmes e séries, com avaliações, status de visualização, temporadas/episódios, histórico e relatórios de consumo de mídia. O sistema permite o usuário montar seu próprio catálogo, marcar mídias como assistidas, avaliar e visualizar as avaliações, gerenciar o perfil do usuário e configurações, além de gerar relatórios.
 
-O sistema deve permitir acompanhar o progresso de séries e comparar avaliações entre mídias, gerenciar o perfil do usuário e configurações.
+## Pré-Requisitos
+Para executar o programa, basta ter o Python e o Git instalados na sua máquina
 
 ## Guia de Instalação
 
