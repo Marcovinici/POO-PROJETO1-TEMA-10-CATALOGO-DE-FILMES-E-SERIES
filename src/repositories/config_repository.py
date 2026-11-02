@@ -13,6 +13,12 @@ class ConfigRepository:
     limite_de_listas_personalizadas (int): Número máximo de listas personalizadas
     multiplicador_de_duracao (float): Valor que multiplica as durações das mídias
     """
+    PADROES = {
+        "nota_minima_de_recomendados": 7.0,
+        "limite_de_listas_personalizadas": 10,
+        "multiplicador_de_duracao": 1,
+    }
+
     def __init__(self, caminho_json):
         self.caminho = Path(caminho_json)
         self._config = {} # Inicializa config como um dicionário vazio antes de carregá-lo
@@ -28,13 +34,23 @@ class ConfigRepository:
         """
         if self.caminho.exists():
             with self.caminho.open("r", encoding="utf-8") as arquivo:
-                self._config = json.load(arquivo)
+                configuracao = json.load(arquivo)
+            if not isinstance(configuracao, dict):
+                raise DadosInvalidosError(
+                    "O arquivo de configuração deve conter um objeto JSON."
+                )
+            self._config = {**self.PADROES, **configuracao}
         else:
-            self._config = {
-                "nota_minima_de_recomendados": 7.0,
-                "limite_de_listas_personalizadas": 10,
-                "multiplicador_de_duracao": 1,
-            }
+            self._config = self.PADROES.copy()
+        self._validar_configuracoes()
+
+    def _validar_configuracoes(self):
+        nota = self._config["nota_minima_de_recomendados"]
+        limite = self._config["limite_de_listas_personalizadas"]
+        multiplicador = self._config["multiplicador_de_duracao"]
+        self.nota_minima_de_recomendados = nota
+        self.limite_de_listas_personalizadas = limite
+        self.multiplicador_de_duracao = multiplicador
 
     # Getter e setter de nota_minima_de_recomendados
     @property
@@ -88,5 +104,10 @@ class ConfigRepository:
         """
         Atualiza o arquivo json com a '_config' atual
         """
+        self.caminho.parent.mkdir(parents=True, exist_ok=True)
         with self.caminho.open("w", encoding="utf-8") as arquivo:
             json.dump(self._config, arquivo, ensure_ascii=False, indent=4)
+
+    def obter_configuracoes(self) -> dict:
+        """Retorna uma cópia das configurações atuais."""
+        return self._config.copy()
