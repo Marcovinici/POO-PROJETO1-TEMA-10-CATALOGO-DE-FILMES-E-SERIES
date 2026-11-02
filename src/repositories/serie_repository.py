@@ -207,6 +207,16 @@ class SerieRepository:
                 )
                 series_objs.append(serie)
 
+        from repositories.avaliacao_repository import AvaliacaoRepository
+
+        avaliacao_repository = AvaliacaoRepository(self.caminho)
+        for serie in series_objs:
+            avaliacao_repository.carregar_avaliacoes(serie)
+            for temporada in serie.temporadas:
+                avaliacao_repository.carregar_avaliacoes(temporada)
+                for episodio in temporada.episodios:
+                    avaliacao_repository.carregar_avaliacoes(episodio)
+
         return series_objs
 
     def buscar_id_serie(self, titulo: str, ano: int | None = None) -> int | None:
