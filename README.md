@@ -9,6 +9,64 @@ Sistema de linha de comando (CLI) ou API mínima (FastAPI/Flask, opcional) para 
 
 O sistema deve permitir acompanhar o progresso de séries e comparar avaliações entre mídias, gerenciar o perfil do usuário e configurações.
 
+## Guia de Instalação
+
+### Windows
+
+No PowerShell ou no Prompt de Comando, clone o repositório:
+```PowerShell
+git clone https://github.com/Marcovinici/POO-PROJETO1-TEMA-10-CATALOGO-DE-FILMES-E-SERIES.git
+```
+Depois entre no arquivo do repositório com ```cd POO-PROJETO1-TEMA-10-CATALOGO-DE-FILMES-E-SERIES``` e crie um ambiente virtual com:
+```PowerShell
+python -m venv .venv
+```
+Para ativar o venv execute no PowerShell:
+```PowerShell
+.\venv\Scripts\Activate.ps1
+```
+Caso o comando acima seja negado, abra o Power Shell como Administrador e execute o comando para liberar a execução de scripts do usuário:
+```PowerShell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+E pressione Enter se o PowerShell pedir confirmação. Feito isso, tente executar o comando anterior novamente, é esperado que o venv seja ativado.
+E caso esteja executando os comandos no Prompt de Comando para ativar o venv execute:
+```
+.\.venv\Scripts\activate.bat
+```
+Por fim, atualize o pip e instale o projeto com as dependências com:
+```PowerShell
+pip install .
+```
+### Linux/Mac
+No bash ou zsh, clone o repositório:
+```bash
+git clone https://github.com/Marcovinici/POO-PROJETO1-TEMA-10-CATALOGO-DE-FILMES-E-SERIES.git
+```
+Entre no arquivo do repositório com ```cd POO-PROJETO1-TEMA-10-CATALOGO-DE-FILMES-E-SERIES```e crie o ambiente virtual com:
+```bash
+python -m venv .venv
+```
+OBS: Caso o comando acima retorne um erro em vez de ```python``` digite ```python3```
+Para ativar o ambiente execute:
+```bash
+source .venv/bin/activate
+```
+Por fim atualize o pip e instale o projeto com:
+```bash
+pip install --upgrade pip
+pip install .
+```
+
+Para confirmar que o programa foi instalado execute:
+```bash
+pipocli usuario
+```
+É esperado que seja retornado uma mensagem informando que não há nenhum usuário logado
+
+## Comandos Pipocli
+
+
 ## Estrutura de Pastas
 ```text
 POO-PROJETO1-TEMA-10-CATALOGO-DE-FILMES-E-SERIES/
