@@ -1,4 +1,5 @@
 from domain.historico import Historico
+from domain.excecoes import DadosInvalidosError
 
 
 class Usuario:
@@ -28,6 +29,7 @@ class Usuario:
         self.tipo = tipo
         self.historico = historico or Historico(self.nome_de_usuario)
 
+    # Getter e setter de nome_de_usuário
     @property
     def nome_de_usuario(self):
         return self._nome_de_usuario
@@ -36,8 +38,9 @@ class Usuario:
         if 0 < len(novo_nome) <= 100:
             self._nome_de_usuario = novo_nome
         else:
-            raise ValueError("O nome de usuário deve ter entre 1 e 100 caracteres")
+            raise DadosInvalidosError("O nome de usuário deve ter entre 1 e 100 caracteres")
 
+    # Getter e setter de senha
     @property
     def senha(self):
         return self._senha
@@ -46,8 +49,9 @@ class Usuario:
         if len(nova_senha) > 4:
             self._senha = nova_senha
         else:
-            raise ValueError("A senha deve possuir ao menos 4 caracteres")
+            raise DadosInvalidosError("A senha deve possuir ao menos 4 caracteres")
 
+    # Getter e setter de nome
     @property
     def nome(self):
         return self._nome
@@ -56,17 +60,18 @@ class Usuario:
         if len(novo_nome) > novo_nome.count(" ") and len(novo_nome) > 0:
             self._nome = novo_nome
         else:
-            raise ValueError("O nome não pode ser vazio")
+            raise DadosInvalidosError("O nome não pode ser vazio")
 
+    # Getter e setter de tipo
     @property
     def tipo(self):
         return self._tipo
     @tipo.setter
     def tipo(self, tipo):
-        if tipo == "PADRAO" or tipo == "ADMIN":
+        if tipo == "PADRAO" or tipo == "ADMIN": # Os únicos tipos válidos são PADRAO E ADMIN
             self._tipo = tipo
         else:
-            raise ValueError("Tipo inválido para usuário")
+            raise DadosInvalidosError("Tipo inválido para usuário")
 
     def __str__(self):
         return f"{self._nome_de_usuario}: {self.nome}"

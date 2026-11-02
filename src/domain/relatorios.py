@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from typing import Any
 
 from domain.midias import Filme, Serie
+from domain.excecoes import DadosInvalidosError
 
 
 class Relatorio:
@@ -33,8 +34,8 @@ class Relatorio:
             origem = getattr(origem, metodo)()
         return list(origem)
 
-    def tempo_total_assistido(self) -> int:
-        """Retorna o tempo total de todas as mídias do histórico, em minutos."""
+    def tempo_total_assistido(self, multiplicador: float = 1) -> float:
+        """Retorna o tempo total do histórico na unidade configurada."""
         if self.historico is None:
             return 0
 
@@ -42,7 +43,9 @@ class Relatorio:
         if registros is None:
             registros = getattr(self.historico, "_registros", [])
 
-        return sum(registro.midia.duracao for registro in registros) # Retorna a soma da duração de cada mídia
+        return sum(
+            registro.midia.duracao * multiplicador for registro in registros
+        )
 
     def media_de_notas_por_genero(self) -> dict[str, float]:
         """Retorna a média das avaliações agrupada pelo gênero da mídia."""
@@ -80,6 +83,30 @@ class Relatorio:
                 "nota_media": midia.nota_media,
             }
             for midia in avaliadas[:10]
+        ]
+
+    def recomendados(self, nota_minima: float, limite: int = 10) -> list[dict[str, Any]]:
+        """Retorna até dez mídias cuja nota atinge o mínimo configurado."""
+        if limite <= 0:
+            raise DadosInvalidosError("O limite de recomendações deve ser maior que zero.")
+
+        # Carrega a lista de todas as mídias
+        recomendados = [
+            midia
+            for midia in [*self.filmes, *self.series]
+            if getattr(midia, "nota_media", None) is not None
+            and midia.nota_media >= nota_minima
+        ]
+        # Ordena por nota (maior para menor)
+        recomendados.sort(key=lambda midia: (-midia.nota_media, midia.titulo.casefold()))
+
+        return [
+            {
+                "titulo": midia.titulo,
+                "tipo": "filme" if isinstance(midia, Filme) else "serie",
+                "nota_media": midia.nota_media,
+            }
+            for midia in recomendados[:limite] # o máximo de mídias retornadas é determinada pela variável limite
         ]
 
     def series_com_mais_eps(self) -> list[dict[str, Any]]:

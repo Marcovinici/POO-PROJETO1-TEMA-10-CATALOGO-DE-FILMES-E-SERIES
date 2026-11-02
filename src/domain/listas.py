@@ -1,3 +1,5 @@
+from domain.excecoes import DadosInvalidosError
+
 class ListaPersonalizada:
     """Representa uma lista personalizada de mídias
 
@@ -17,13 +19,28 @@ class ListaPersonalizada:
         self.midias = []
 
     def adicionar_na_lista(self, nova_midia):
+        # Se a mídia já existir na lista é retornado erro
         if any(midia.titulo == nova_midia.titulo for midia in self.midias):
             raise ValueError("A mídia já pertence a lista")
 
+        # Caso contrário ela é adicionada
         self.midias.append(nova_midia)
         return f"{nova_midia.titulo} adicionado com sucesso a {self.nome}"
         
 
     def remover_da_lista(self, midia):
-        if midia.titulo not in self.midias:
-            raise ValueError(f"A mídia de título {midia.titulo} não pertence a lista {self.nome}")
+        # Procura a mídia que deve ser removida e guarda seu indice
+        indice = next(
+            (
+                indice
+                for indice, midia_da_lista in enumerate(self.midias)
+                if midia_da_lista.titulo == midia.titulo
+            ),
+            None,
+        )
+        if indice is None:
+            raise DadosInvalidosError(f"A mídia de título {midia.titulo} não pertence a lista {self.nome}")
+
+        # Se a mídia estiver na lista ela é removida
+        self.midias.pop(indice)
+        return f"{midia.titulo} removido com sucesso de {self.nome}"

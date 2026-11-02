@@ -24,6 +24,11 @@ class Historico:
         self.usuario_id = usuario_id
         self._registros: list[MidiaAssistida] = []
 
+    @property
+    def registros(self) -> list[MidiaAssistida]:
+        """Retorna os registros de mídias concluídas pelo usuário."""
+        return list(self._registros)
+
     def registrar_conclusao(self, midia: Midia, data: datetime = None) -> MidiaAssistida:
         """
         Salva no registro uma mídia assistida
@@ -42,6 +47,18 @@ class Historico:
         )
         self._registros.append(registro)
         return registro
+
+    def adicionar_registro(self, registro: MidiaAssistida) -> None:
+        """Adiciona um registro já existente, normalmente carregado do banco."""
+        if not isinstance(registro, MidiaAssistida):
+            raise DadosInvalidosError(
+                "O histórico só pode conter registros de MidiaAssistida."
+            )
+        if registro.usuario_id != self.usuario_id:
+            raise DadosInvalidosError(
+                "O registro pertence a um usuário diferente do histórico."
+            )
+        self._registros.append(registro)
 
 
     def soma_tempo_no_periodo(self, inicio: datetime, fim: datetime) -> int:
