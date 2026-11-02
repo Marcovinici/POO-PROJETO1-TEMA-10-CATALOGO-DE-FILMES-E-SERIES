@@ -72,9 +72,9 @@ class FilmeRepository:
         with self.conectar() as conexao:
             cursor = conexao.cursor()
             cursor.execute("SELECT * FROM filmes")
-            filmes = cursor.fetchall()
+            linhas = cursor.fetchall()
 
-        return [
+        filmes = [
             Filme(
                 titulo=filme["titulo"],
                 duracao=filme["duracao"],
@@ -88,8 +88,14 @@ class FilmeRepository:
                 if filme["roteirista"]
                 else [],
             )
-            for filme in filmes
+            for filme in linhas
         ]
+        from repositories.avaliacao_repository import AvaliacaoRepository
+
+        avaliacao_repository = AvaliacaoRepository(self.caminho)
+        for filme in filmes:
+            avaliacao_repository.carregar_avaliacoes(filme)
+        return filmes
 
     def buscar_filme_id(self, titulo: str, ano: int | None = None) -> int | None:
         """
@@ -126,4 +132,3 @@ class FilmeRepository:
                     (id,),
                 )
             return "Filme deletado com sucesso"
-
