@@ -2,12 +2,12 @@
  Esse projeto faz parte da disciplina de Programação Orientada a Objetos (ES0008), feito para trabalhar os conhecimentos adquiridos ao longo da cadeira e nas disciplinas anteriores.
 
 ## Sumário
-- [Descrição do Projeto](#-descrição-do-projeto)
-- [Pré-Requisitos](#-pré-requisitos)
-- [Guia de Instalação](#-guia-de-instalação)
-- [Comandos Pipocli](#-comandos-pipocli)
-- [Estrutura de Pastas](#-estrutura-de-classes)
-- [Estrutura de Classes](#-estrutura-de-classes)
+- [Descrição do Projeto](#descrição-do-projeto)
+- [Pré-Requisitos](#pré-requisitos)
+- [Guia de Instalação](#guia-de-instalação)
+- [Comandos Pipocli](#comandos-pipocli)
+- [Estrutura de Pastas](#estrutura-de-pastas)
+- [Estrutura de Classes](#estrutura-de-classes)
 
 ## Descrição do Projeto
 
