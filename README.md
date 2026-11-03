@@ -45,6 +45,12 @@ Por fim, atualize o pip e instale o projeto com as dependências com:
 ```PowerShell
 pip install .
 ```
+Para confirmar que o programa foi instalado execute:
+```bash
+pipocli usuario
+```
+É esperado que seja retornado uma mensagem informando que não há nenhum usuário logado
+
 ### Linux/Mac
 No bash ou zsh, clone o repositório:
 ```bash
