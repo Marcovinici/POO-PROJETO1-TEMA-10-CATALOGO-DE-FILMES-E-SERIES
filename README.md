@@ -173,6 +173,8 @@ pipocli usuario
 - O projeto foi separado em domain (classes domínio), repositories (classes responsáveis pela manipulação da persistência) e app (interface cli)
 - Sqlite3 foi utilizado para a persistência
 - As configurações são armazenadas em um arquivo json (config.json)
+- O usuário pode ser tanto um usuário padrão como um usuário administrador (característica decidida no cadastro)
+- Para o programa verificar se o usuário está logado e se o usuário é um administrador, foi criada a tabela sessao, exclusiva para essa checagem
 
 ## Estrutura de Pastas
 ```text
