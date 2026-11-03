@@ -7,7 +7,7 @@ name = "pipocli"
 version = "0.1.0"
 description = "Projeto de Catálogo de Filmes e Séries em Python (POO - UFCA)"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.8"
 authors = [
     { name = "Marcovinici" }
 ]
