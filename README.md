@@ -30,7 +30,7 @@ python -m venv .venv
 ```
 Para ativar o venv execute no PowerShell:
 ```PowerShell
-.\venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 ```
 Caso o comando acima seja negado, abra o Power Shell como Administrador e execute o comando para liberar a execução de scripts do usuário:
 ```PowerShell
@@ -163,6 +163,10 @@ pipocli usuario
 #### ```pipocli config listasmax <valor>```
 #### ```pipocli config metrica <horas|minutos>```
 
+## Decisões de Design
+- O projeto foi separado em domain (classes domínio), repositories (classes responsáveis pela manipulação da persistência) e app (interface cli)
+- Sqlite3 foi utilizado para a persistência
+- As configurações são armazenadas em um arquivo json (config.json)
 
 ## Estrutura de Pastas
 ```text
@@ -177,7 +181,8 @@ POO-PROJETO1-TEMA-10-CATALOGO-DE-FILMES-E-SERIES/
 │   │   └── cli.py
 │   ├── database/
 │   │   ├── banco.db
-│   │   └── banco_scripts.py
+│   │   ├── banco_scripts.py
+│   │   └── config.json
 │   ├── domain/
 │   │   ├── __init__.py
 │   │   ├── avaliacao.py
