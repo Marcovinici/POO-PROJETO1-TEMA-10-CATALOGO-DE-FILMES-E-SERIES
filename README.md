@@ -6,6 +6,7 @@
 - [Pré-Requisitos](#pré-requisitos)
 - [Guia de Instalação](#guia-de-instalação)
 - [Comandos Pipocli](#comandos-pipocli)
+- [Decisões de Design](#decisões-de-design)
 - [Estrutura de Pastas](#estrutura-de-pastas)
 - [Estrutura de Classes](#estrutura-de-classes)
 
